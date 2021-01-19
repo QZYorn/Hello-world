@@ -1,0 +1,19 @@
+﻿生成启动时间为 2021/1/19 20:10:11。
+     1>项目“C:\Users\Asus\Desktop\Hello-world\Hello-world\21_1\21_1_19\通讯录动态\text.c\text.c\text.c.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt contact.c text.c
+         text.c
+         contact.c
+     1>c:\users\asus\desktop\hello-world\hello-world\21_1\21_1_19\通讯录动态\text.c\text.c\contact.c(24): warning C4028: 形参 1 与声明不同
+     1>c:\users\asus\desktop\hello-world\hello-world\21_1\21_1_19\通讯录动态\text.c\text.c\contact.c(31): warning C4098: “Checksize”:“void”函数返回值
+     1>c:\users\asus\desktop\hello-world\hello-world\21_1\21_1_19\通讯录动态\text.c\text.c\contact.c(33): warning C4133: “=”: 从“Contact *”到“PelInfo *”的类型不兼容
+         正在生成代码...
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Asus\Desktop\Hello-world\Hello-world\21_1\21_1_19\通讯录动态\text.c\Debug\text.c.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Asus\Desktop\Hello-world\Hello-world\21_1\21_1_19\通讯录动态\text.c\Debug\text.c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Asus\Desktop\Hello-world\Hello-world\21_1\21_1_19\通讯录动态\text.c\Debug\text.c.lib" /MACHINE:X86 Debug\contact.obj
+         Debug\text.obj
+         text.c.vcxproj -> C:\Users\Asus\Desktop\Hello-world\Hello-world\21_1\21_1_19\通讯录动态\text.c\Debug\text.c.exe
+     1>已完成生成项目“C:\Users\Asus\Desktop\Hello-world\Hello-world\21_1\21_1_19\通讯录动态\text.c\text.c\text.c.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:01.22
