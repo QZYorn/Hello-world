@@ -42,12 +42,12 @@ int main()
 				SortContact(&con);//排序
 				break;
 			case EXIT:
+				SaveContact(&con);//保存到本地文件
+				FreeContact(&con);//释放堆空间
 				break;
 			default:
 				printf("非法输入\n");
 		}
 	} while (input);
-	free(con.info);
-	con.info = NULL;
 	return 0;
 }

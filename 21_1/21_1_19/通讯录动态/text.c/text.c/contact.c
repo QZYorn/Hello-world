@@ -1,5 +1,10 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include"contact.h"
+void FreeContact(struct Contact *ps)
+{
+	free(ps->info);
+	ps->info = NULL;
+}
 static int Find(const struct Contact *ps)//查找人名并返回角标
 {
 	int i;
@@ -24,14 +29,14 @@ void Checksize(struct Contact *ps)//判断通讯剩余空间
 {
 	if (ps->maxsize == (ps)->size)//若已满，尝试扩容
 	{
-		struct Contact* tmp =(struct Contact*)realloc(ps->info, sizeof(struct Contact) + (ps->maxsize+2) * sizeof(struct PelInfo));
+		struct PelInfo* tmp =(struct PelInfo*)realloc(ps->info, (ps->maxsize+2) * sizeof(struct PelInfo));
 		if (tmp == NULL)
 		{
 			printf("扩容失败！！\n");
-			return NULL;
+			return ;
 		}
 		ps->info = tmp;
-		(ps)->maxsize += 2;
+		ps->maxsize += 2;
 		printf("扩容成功！！\n");
 	}
 }
@@ -62,10 +67,37 @@ int cmp_age(const void *a, const void *b)
 
 void InitContact(struct Contact *ps)//初始化通讯录
 {
+	int i;
 	(*ps).size = 0;
 	ps->maxsize = 3;
 	ps->info = (struct PelInfo*)malloc(3*sizeof(struct PelInfo));
-	memset(ps->info, 0, 3*sizeof(struct PelInfo));
+	FILE* pf = fopen("Contact.ojj", "rb");
+	if (pf == NULL)
+	{
+		perror("fopen rb failed:");
+	}
+	else
+	{
+		printf("读取记录中...");
+	}
+	for (i = 0;;i++)
+	{
+		fread(&(ps->info[i]), sizeof(struct PelInfo), 1, pf);
+		if (ferror(pf))
+		{
+			perror("fread failed:");
+			break;
+		}
+		else if (feof(pf))
+		{
+			printf("读取记录结束！");
+			break;
+		}
+		ps->size++;
+		Checksize(ps);
+	}
+	fclose(pf);
+	pf = NULL;
 }
 void AddContact(struct Contact *ps)
 {
@@ -230,7 +262,20 @@ void SortContact(struct Contact *ps)
 		}
 	}
 }
-	///*for (i = 0; i < ps->size; i++)
-	//	for (j = 0; j < ps->size - 1 - i; j++)
-	//
+void SaveContact(struct Contact *ps)
+{
+	int i;
+	FILE* pf = fopen("Contact.ojj", "wb");
+	if (pf == NULL)
+	{
+		perror("fopen faild:");
+	}
+	for (i = 0; i < ps->size; i++)
+	{
+		fwrite(&(ps->info[i]), sizeof(struct PelInfo), 1, pf);
+	}
+	fclose(pf);
+	pf = NULL;
+}
+
 			

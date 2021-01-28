@@ -39,6 +39,7 @@ void DelContact(struct Contact *ps);
 void SearchContact(const struct Contact *ps);
 void ModContact(struct Contact *ps);
 void SortContact(struct Contact *ps);
-void Checksize(struct Contact **pps);
-
+void Checksize(struct Contact *ps);
+void FreeContact(struct Contact *ps);
+void SaveContact(struct Contact *ps);
 
