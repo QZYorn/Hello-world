@@ -2,6 +2,21 @@
 using namespace std;
 #include"MyVector.hpp"
 
+void Add10(int &a)
+{
+	a += 10;
+}
+
+template<class T>
+class Double
+{
+public:
+	virtual void operator()(T& t)
+	{
+		t <<= 1;
+	}
+};
+
 void Test01()
 {
 	int arr[] = { 0, 1, 2, 3, 4, 3, 2, 1, 0 };
@@ -24,6 +39,11 @@ void Test01()
 
 
 	cout << "mv1:  ";
+	int i = mv1.deduplicate();
+	if (i > 0)
+	{
+		cout << "重复元素个数：" << i << "     ";
+	}
 	for (int i = 0; i < mv1.size(); i++)//get的方式 遍历mv1
 	{
 		cout << mv1.get(i) << " ";
@@ -32,9 +52,10 @@ void Test01()
 
 
 	cout << "mv2:  ";
+	mv2.traverse(Add10);
+	mv2.traverse(Double<int>());
 	for (int i = 0; i < mv2.size(); i++)
 	{
-		mv2.put(i, mv2.get(i)*2);//替换mv2中的元素,加倍
 		cout << mv2[i] << " ";
 	}
 	cout << endl;

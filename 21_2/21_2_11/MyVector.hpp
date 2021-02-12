@@ -63,7 +63,11 @@ public:
 	//返回向量容量
 	int capacity();
 
-	
+	//无序向量 区间 查找指定元素,成功返回元素秩，失败返回区间外秩
+	Rank find(T const& t, Rank lo, Rank hi);
+
+	//无序向量 整体 查找指定元素,成功返回元素秩，失败返回区间外秩
+	Rank find(T const& t);
 
 
 
@@ -79,6 +83,17 @@ public:
 
 	//单元素删除,返回被删除的元素
 	T remove(Rank r);
+
+	//去重操作,返回被删除元素个数
+	int deduplicate();
+
+	//遍历
+	//函数指针/回调函数
+	void traverse(void(*visit)(T&));
+
+	//函数对象/伪函数
+	template<class VST>
+	void traverse(VST& visit);
 };
 
 
@@ -230,6 +245,23 @@ int MyVector<T>::capacity()
 }
 
 
+//无序向量 区间 查找指定元素，成功返回元素秩，失败返回区间外秩
+template<class T>
+Rank MyVector<T>::find(T const& t, Rank lo, Rank hi)
+{
+	assert(0 <= lo&&lo <= hi&&hi <= _size);
+
+	while (lo < hi-- && _elem[hi] != t);
+	return hi;
+}
+
+//无序向量 整体 查找指定元素,成功返回元素秩，失败返回区间外秩
+template<class T>
+Rank MyVector<T>::find(T const& t)
+{
+	return find(t, 0, _size);
+}
+
 
 
 //只写接口
@@ -285,4 +317,41 @@ T MyVector<T>::remove(Rank r)
 	T tmp = _elem[r];//备份被删除元素
 	remove(r, r + 1);
 	return tmp;//返回被删除元素
+}
+
+//去重操作,返回被删除元素个数
+template<class T>
+int MyVector<T>::deduplicate()
+{
+	int old_size = _size;//记录原规模
+	Rank i = 1;//从_elem[1]开始
+	while (i < _size)
+	{
+		find(_elem[i], 0, i) > 0 ? remove(i) : i++;//在前缀中 查找成功 则删掉当前元素，失败则继续下一位
+	}
+	return old_size - _size ;//返回新旧规模差
+}
+
+
+
+//遍历
+//函数指针/回调函数
+template<class T>
+void MyVector<T>::traverse(void(*visit)(T&))
+{
+	for (int i = 0; i < _size; i++)
+	{
+		visit(_elem[i]);
+	}
+}
+
+//函数对象/伪函数
+template<class T>
+template<class VST>
+void MyVector<T>::traverse(VST& visit)
+{
+	for (int i = 0; i < _size; i++)
+	{
+		visit(_elem[i]);
+	}
 }
