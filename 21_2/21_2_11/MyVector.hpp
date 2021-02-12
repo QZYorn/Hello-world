@@ -6,6 +6,7 @@ using namespace std;
 typedef int Rank;//秩
 #define DEFAULT_CAPACITY 3//初始容量
 
+
 template<class T>
 class MyVector
 {
@@ -24,6 +25,12 @@ protected:
 
 	//缩容
 	void shrink();
+
+	//有序向量 二分查找 A
+	Rank binSearchA(T const* A, T const& e, Rank lo, Rank hi);
+
+	//有序向量 斐波那契查找
+	Rank fibSearch(T const* A, T const& e, Rank lo, Rank hi);
 
 
 public:
@@ -63,20 +70,29 @@ public:
 	//返回向量容量
 	int capacity();
 
-	//无序向量 区间 查找指定元素,成功返回元素秩，失败返回区间外秩
-	Rank find(T const& t, Rank lo, Rank hi);
+	//判断向量是否已经排序，返回逆序对个数
+	int disordered();
 
-	//无序向量 整体 查找指定元素,成功返回元素秩，失败返回区间外秩
-	Rank find(T const& t);
+	//无序向量 区间 查找指定元素,成功返回元素秩，失败返回区间前秩
+	Rank find(T const& e, Rank lo, Rank hi);
+
+	//无序向量 整体 查找指定元素,成功返回元素秩，失败返回区间前秩
+	Rank find(T const& e);
+
+	//有序向量 区间 查找指定元素,成功返回元素秩，失败返回区间外秩
+	Rank search(T const& e, Rank lo, Rank hi);
+
+	//有序向量 整体 查找指定元素,成功返回元素秩，失败返回区间外秩
+	Rank search(T const& e);
 
 
 
 	//只写接口
 	//将 秩i 元素 换成 指定元素
-	void put(Rank r, T t);
+	void put(Rank r, T const& e);
 
-	//在秩r处插入元素t,返回秩
-	Rank insert(Rank r, T const& t);
+	//在秩r处插入元素e,返回秩
+	Rank insert(Rank r, T const& e);
 
 	//区间删除,返回删除元素个数
 	int remove(Rank lo, Rank hi);
@@ -84,8 +100,16 @@ public:
 	//单元素删除,返回被删除的元素
 	T remove(Rank r);
 
-	//去重操作,返回被删除元素个数
+	//无序向量 去重操作,返回被删除元素个数
 	int deduplicate();
+
+	//有序向量 低效 去重操作,返回被删除元素个数
+	int uniquifyLow();
+
+	//有序向量 高效 去重操作,返回被删除元素个数
+	int uniquifyHigh();
+
+
 
 	//遍历
 	//函数指针/回调函数
@@ -152,6 +176,39 @@ void MyVector<T>::shrink()
 	delete[] old_elem;//释放旧容器
 	old_elem = NULL;
 }
+
+//有序向量 二分查找 A
+template<class T>
+Rank MyVector<T>::binSearchA(T const* A,T const& e, Rank lo, Rank hi)
+{
+	while (lo < hi)
+	{
+		Rank mi = (lo + hi) >> 1;//以中点为轴
+		if (e < A[mi])//深入左半
+		{
+			hi = mi;
+		}
+		else if (A[mi] < e)//深入右半
+		{
+			lo = mi + 1;
+		}
+		else
+		{
+			return mi;//成功命中返回秩
+		}
+	}
+	return -1;//失败返回-1
+}
+
+//有序向量 斐波那契查找
+template<class T>
+Rank MyVector<T>::fibSearch(T const* A, T const& e, Rank lo, Rank hi)
+{
+	return -1;
+}
+
+
+
 
 //构造函数
 //默认 构造函数
@@ -244,38 +301,72 @@ int MyVector<T>::capacity()
 	return _capacity;
 }
 
+//判断向量是否已经排序，返回逆序对个数
+template<class T>
+int MyVector<T>::disordered()
+{
+	int count = 0;
+	for (int i = 1; i < _size; i++)
+	{
+		if (_elem[i - 1] >_elem[i])
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
 
 //无序向量 区间 查找指定元素，成功返回元素秩，失败返回区间外秩
 template<class T>
-Rank MyVector<T>::find(T const& t, Rank lo, Rank hi)
+Rank MyVector<T>::find(T const& e, Rank lo, Rank hi)
 {
 	assert(0 <= lo&&lo <= hi&&hi <= _size);
 
-	while (lo < hi-- && _elem[hi] != t);
+	while (lo < hi-- && _elem[hi] != e);
 	return hi;
 }
 
 //无序向量 整体 查找指定元素,成功返回元素秩，失败返回区间外秩
 template<class T>
-Rank MyVector<T>::find(T const& t)
+Rank MyVector<T>::find(T const& e)
 {
-	return find(t, 0, _size);
+	return find(e, 0, _size);
 }
+
+//有序向量 区间 查找指定元素,成功返回元素秩，失败返回区间外秩
+template<class T>
+Rank MyVector<T>::search(T const& e, Rank lo, Rank hi)
+{
+	assert(0 <= lo&&lo <= hi&&hi <= _size);
+
+	return (rand() % 2)
+		? binSearchA(_elem, e, lo, hi)
+		: fibSearch(_elem, e, lo, hi);
+}
+
+//有序向量 整体 查找指定元素,成功返回元素秩，失败返回区间外秩
+template<class T>
+Rank MyVector<T>::search(T const& e)
+{
+	return search(e, 0, _size);
+}
+
 
 
 
 //只写接口
 //将 秩 元素 换成 指定元素
 template<class T>
-void MyVector<T>::put(Rank r, T t)
+void MyVector<T>::put(Rank r, T const& e)
 {
 	assert(r >= 0 && r <= _size);
-	_elem[r] = t;
+	_elem[r] = e;
 }
 
-//在秩r处插入元素t,返回秩
+//在秩r处插入元素e,返回秩
 template<class T>
-Rank MyVector<T>::insert(Rank r, T const& t)
+Rank MyVector<T>::insert(Rank r, T const& e)
 {
 	assert(r >= 0 && r <= _size);
 
@@ -285,7 +376,7 @@ Rank MyVector<T>::insert(Rank r, T const& t)
 	{
 		_elem[i] = _elem[i - 1];
 	}
-	_elem[r] = t;//放入元素
+	_elem[r] = e;//放入元素
 	_size++;//更新大小
 	return r;
 }
@@ -330,6 +421,37 @@ int MyVector<T>::deduplicate()
 		find(_elem[i], 0, i) > 0 ? remove(i) : i++;//在前缀中 查找成功 则删掉当前元素，失败则继续下一位
 	}
 	return old_size - _size ;//返回新旧规模差
+}
+
+//有序向量  低效 去重操作,返回被删除元素个数
+template<class T>
+int MyVector<T>::uniquifyLow()
+{
+	int old_size = _size;
+	int i = 1;
+	while (i < _size)
+	{
+		(_elem[i] == _elem[i - 1]) ? remove(i) : i++;
+	}
+	return old_size - _size;
+}
+
+//有序向量  高效 去重操作,返回被删除元素个数
+template<class T>
+int MyVector<T>::uniquifyHigh()
+{
+	int i = 0;
+	int j = 0;
+	while ( ++j < _size)
+	{
+		if (_elem[i] != _elem[j])
+		{
+			_elem[++i] = _elem[j];
+		}
+	}
+	_size = ++i;
+	shrink();
+	return j - i;
 }
 
 
