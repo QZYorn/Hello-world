@@ -2,6 +2,7 @@
 #include<iostream>
 using namespace std;
 #include<assert.h>
+#include"Fib.h"
 
 typedef int Rank;//秩
 #define DEFAULT_CAPACITY 3//初始容量
@@ -204,6 +205,28 @@ Rank MyVector<T>::binSearchA(T const* A,T const& e, Rank lo, Rank hi)
 template<class T>
 Rank MyVector<T>::fibSearch(T const* A, T const& e, Rank lo, Rank hi)
 {
+	Fib fib(hi - lo);
+
+	while (lo < hi)
+	{
+		while (hi - lo < fib.get())
+		{
+			fib.prev();
+		}
+		Rank mi = lo + fib.get()-1;//以Fib(k-1)为轴
+		if (e < A[mi])//深入左半
+		{
+			hi = mi;
+		}
+		else if (A[mi] < e)//深入右半
+		{
+			lo = mi + 1;
+		}
+		else
+		{
+			return mi;//成功命中返回秩
+		}
+	}
 	return -1;
 }
 

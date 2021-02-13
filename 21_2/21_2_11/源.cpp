@@ -21,7 +21,7 @@ public:
 void Test01()
 {
 	int arr1[] = { 0, 1, 2, 3, 4, 3, 2, 1, 0 };
-	int arr2[] = { 0,1, 1, 1, 2, 2, 2, 3,3,4,4,5, 5, 5, 8, 9, 11, 11, 12, 15 };//有序数组
+	int arr2[] = { 0,1, 1, 1, 2, 2, 2, 3,3,4,4,5, 5, 5, 8, 9};//有序数组
 	//MyVector<int> mv;//默认 构造
 	MyVector<int> mv(arr1, 0, sizeof(arr1)/sizeof(arr1[0]));   //拷贝 数组区间 构造
 	MyVector<int> mv1(mv, 0, mv.size());					   //拷贝 向量区间 构造
@@ -67,6 +67,13 @@ void Test01()
 	cout << "mv3:  ";
 	//mv3.uniquifyLow();//低效 去重
 	mv3.uniquifyHigh(); //高效 去重
+	for (int i = 0; i < mv3.size(); i++)
+	{
+		cout << mv3.get(i) << " ";
+	}
+	cout << endl;
+	
+	cout << "mv3:  ";
 	for (int i = 0; i < mv3.size(); i++)
 	{
 		cout << mv3.search(i) << " ";
