@@ -30,8 +30,17 @@ protected:
 	//有序向量 二分查找 A
 	Rank binSearchA(T const* A, T const& e, Rank lo, Rank hi);
 
+	//有序向量 二分查找 B
+	Rank binSearchB(T const* A, T const& e, Rank lo, Rank hi);
+
+	//有序向量 二分查找 C
+	Rank binSearchC(T const* A, T const& e, Rank lo, Rank hi);
+
 	//有序向量 斐波那契查找
 	Rank fibSearch(T const* A, T const& e, Rank lo, Rank hi);
+
+	//均匀有序向量 插值查找
+	Rank intSearch(T const* A, T const& e, Rank lo, Rank hi);
 
 
 public:
@@ -184,7 +193,7 @@ Rank MyVector<T>::binSearchA(T const* A,T const& e, Rank lo, Rank hi)
 {
 	while (lo < hi)
 	{
-		Rank mi = (lo + hi) >> 1;//以中点为轴
+		Rank mi = (lo + hi) >> 1;//以中点为轴，[lo,mi) [mi] (mi,hi)
 		if (e < A[mi])//深入左半
 		{
 			hi = mi;
@@ -201,6 +210,33 @@ Rank MyVector<T>::binSearchA(T const* A,T const& e, Rank lo, Rank hi)
 	return -1;//失败返回-1
 }
 
+//有序向量 二分查找 B
+template<class T>
+Rank MyVector<T>::binSearchB(T const* A, T const& e, Rank lo, Rank hi)
+{
+	while (1 < hi - lo )
+	{
+		Rank mi = (hi + lo) >> 1;
+		(e < _elem[mi]) ? (hi = mi) : (lo = mi);//[lo,mi) [mi,hi)
+	}//出口时hi = lo +1,区间仅剩一个_elem[lo]
+	return (_elem[lo] == e) ? lo : -1;
+}
+
+//有序向量 二分查找 C
+template<class T>
+Rank MyVector<T>::binSearchC(T const* A, T const& e, Rank lo, Rank hi)
+{
+	while (lo < hi)
+	{
+		Rank mi = (hi + lo) >> 1;
+		(e < _elem[mi]) ? (hi = mi) : (lo = mi+1);//[lo,mi) (mi,hi)
+	}//出口时hi == lo,_elem[lo-1]为不大于e的最大值，_elem[hi]为大于e的最小值
+	return --lo;
+}
+
+
+
+
 //有序向量 斐波那契查找
 template<class T>
 Rank MyVector<T>::fibSearch(T const* A, T const& e, Rank lo, Rank hi)
@@ -213,7 +249,7 @@ Rank MyVector<T>::fibSearch(T const* A, T const& e, Rank lo, Rank hi)
 		{
 			fib.prev();
 		}
-		Rank mi = lo + fib.get()-1;//以Fib(k-1)为轴
+		Rank mi = lo + fib.get()-1;//以Fib(k-1)为轴,
 		if (e < A[mi])//深入左半
 		{
 			hi = mi;
@@ -229,6 +265,21 @@ Rank MyVector<T>::fibSearch(T const* A, T const& e, Rank lo, Rank hi)
 	}
 	return -1;
 }
+
+//均匀有序向量 插值查找
+template<class T>
+Rank MyVector<T>::intSearch(T const* A, T const& e, Rank lo, Rank hi)
+{
+	--hi;
+	while (lo < hi)
+	{
+		Rank mi = lo + (hi - lo)*(e - _elem[lo]) / (_elem[hi] - _elem[lo]);
+		(e < _elem[mi]) ? hi = mi : lo = mi+1;
+	}
+	return --lo;
+}
+
+
 
 
 
