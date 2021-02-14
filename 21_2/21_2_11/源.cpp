@@ -58,6 +58,7 @@ void Test01()
 	cout << "mv2:  ";
 	mv2.traverse(Add10);
 	mv2.traverse(Double<int>());
+	mv2.sort();//еепР
 	for (int i = 0; i < mv2.size(); i++)
 	{
 		cout << mv2[i] << " ";

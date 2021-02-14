@@ -42,6 +42,15 @@ protected:
 	//均匀有序向量 插值查找
 	Rank intSearch(T const* A, T const& e, Rank lo, Rank hi);
 
+	//单趟 冒泡接口 一次改进
+	bool bubbleA(Rank lo, Rank hi);
+
+	//单趟 冒泡接口 二次改进
+	Rank bubbleB(Rank lo, Rank hi);
+
+	//冒泡排序
+	void bubbleSort(Rank lo, Rank hi);
+
 
 public:
 	//构造函数
@@ -118,6 +127,12 @@ public:
 
 	//有序向量 高效 去重操作,返回被删除元素个数
 	int uniquifyHigh();
+
+	//区间排序
+	void sort(Rank lo, Rank hi);
+
+	//整体排序
+	void sort();
 
 
 
@@ -277,6 +292,54 @@ Rank MyVector<T>::intSearch(T const* A, T const& e, Rank lo, Rank hi)
 		(e < _elem[mi]) ? hi = mi : lo = mi+1;
 	}
 	return --lo;
+}
+
+//单趟 冒泡接口
+template<class T>
+bool MyVector<T>::bubbleA(Rank lo, Rank hi)
+{
+	bool sorted = true;//无逆序对标志
+	while (++lo < hi)//逐个遍历相邻对
+	{
+		if (_elem[lo - 1] > _elem[lo])//出现逆序对时
+		{
+			sorted = false;//标志置为false
+			swap(_elem[lo - 1], _elem[lo]);//交换逆序对
+		}
+	}
+	return sorted;//返回是否有逆序对
+}
+
+//单趟 冒泡接口 二次改进
+template<class T>
+Rank MyVector<T>::bubbleB(Rank lo, Rank hi)
+{
+	Rank last = lo;//初始化最右逆序对
+	while (++lo < hi)
+	{
+		if (_elem[lo - 1]  > _elem[lo])
+		{
+			last = lo;//更新最右逆序对位置
+			swap(_elem[lo - 1], _elem[lo]);
+		}
+	}
+	return last;
+}
+
+//冒泡排序
+template<class T>
+void MyVector<T>::bubbleSort(Rank lo, Rank hi)
+{
+	switch (rand()%2)
+	{
+	case 1:
+		while (!bubbleA(lo, hi--));
+		break;
+	default:
+		while (lo < (hi = bubbleB(lo, hi)));//从最右逆序对位置开始下一次排序扫描，并在无逆序对时退出循环
+		break;
+	}
+	
 }
 
 
@@ -527,6 +590,36 @@ int MyVector<T>::uniquifyHigh()
 	shrink();
 	return j - i;
 }
+
+//区间排序
+template<class T>
+void MyVector<T>::sort(Rank lo, Rank hi)
+{
+	switch (rand()%5)
+	{
+	case 0:
+		bubbleSort(lo, hi);
+		break;
+	case 1:
+		break;
+	//case 2:
+	//	break;
+	//case 3:
+	//	break;
+	//case 4:
+	//	break;
+	}
+}
+
+//整体排序
+template<class T>
+void MyVector<T>::sort()
+{
+	sort(0, _size);
+}
+
+
+
 
 
 
