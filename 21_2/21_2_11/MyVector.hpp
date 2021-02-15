@@ -51,6 +51,12 @@ protected:
 	//冒泡排序
 	void bubbleSort(Rank lo, Rank hi);
 
+	//归并排序 主算法
+	void mergeSort(Rank lo, Rank hi);
+
+	//归并排序 合并操作
+	void merge(Rank lo,Rank mi, Rank hi);
+
 
 public:
 	//构造函数
@@ -342,6 +348,59 @@ void MyVector<T>::bubbleSort(Rank lo, Rank hi)
 	
 }
 
+//归并排序 主算法
+template<class T>
+void MyVector<T>::mergeSort(Rank lo, Rank hi)
+{
+	if (hi - lo < 2)//递归基
+	{
+		return;
+	}
+	Rank mi = (lo + hi) >> 1;//中点为轴，[lo,mi) [mi,hi)
+	mergeSort(lo, mi);//对前半段排序  B
+	mergeSort(mi, hi);//对后半段排序  C
+	merge(lo, mi, hi);//B 与 C 归并为 A
+}
+
+//归并排序 合并操作
+template<class T>
+void MyVector<T>::merge(Rank lo, Rank mi, Rank hi)
+{
+	T* A = _elem + lo;//A串初始位置为_elem初地址 + 初始偏移量
+
+	int lb = mi - lo;//B串长度
+	T* B = new T[lb];//对B串进行缓冲，防止覆盖
+	for (Rank i = 0; i < lb; B[i] = A[i++]);//复制原内容
+
+	int lc = hi - mi; //C串长度
+	T* C = _elem + mi;//C串初始位置为_elem初地址 + 中轴偏移量
+	//由于C串本就在A串上，C串剩余时不进行操作放在原地
+	for (Rank i = 0, j = 0, k = 0; j < lb;)
+	{
+		if ((lc <= k) || (B[j] <= C[k]))
+		{
+			A[i++] = B[j++];
+		}
+		if ((k <  lc) && (C[k] <  B[j]))
+		{
+			A[i++] = C[k++];
+		}
+	}
+	//C串剩余时仍亦步亦趋地挪到A串
+	/*for (Rank i = 0, j = 0, k = 0; (j < lb) || (k < lc);)
+	{
+		if ((j < lb) && ((lc <= k) || (B[j] <= C[k])))
+		{
+			A[i++] = B[j++];
+		}
+		if ((k < lc) && ((lb <= j) || (C[k] < B[j])))
+		{
+			A[i++] = C[k++];
+		}
+	}*/
+}
+
+
 
 
 
@@ -595,12 +654,13 @@ int MyVector<T>::uniquifyHigh()
 template<class T>
 void MyVector<T>::sort(Rank lo, Rank hi)
 {
-	switch (rand()%5)
+	switch (rand()%2)
 	{
 	case 0:
 		bubbleSort(lo, hi);
 		break;
 	case 1:
+		mergeSort(lo, hi);
 		break;
 	//case 2:
 	//	break;
