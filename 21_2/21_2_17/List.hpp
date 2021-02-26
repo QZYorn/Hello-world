@@ -55,7 +55,8 @@ public:
 	Posi(T) search(T const& e, int n, Posi(T) p);
 	//整体列表 有序查找,查找成功返回节点地址，失败返回NULL
 	Posi(T) search(T const &e);
-
+	//从起始于p的n个节点中找到区间内最大值
+	Posi(T) selectMAX(Posi(T) p, int n);
 
 
 
@@ -74,7 +75,14 @@ public:
 	int deduplicate();
 	//有序列表 唯一化,返回删除重复元素个数
 	int uniquify();
-
+	//整体排序
+	void sort();
+	//区间排序
+	void sort(Posi(T) p, int n);
+	//选择排序
+	void selectSort(Posi(T) p, int n);
+	//插入排序
+	void insertSort(Posi(T) p, int n);
 
 
 	//遍历接口
@@ -234,7 +242,7 @@ Posi(T) List<T>::find(T const& e)
 	return find(e, _size, trailer);
 }
 
-//区间列表 有序查找,在节点p的n个真前驱中查找e,查找成功返回节点地址，失败返回NULL
+//区间列表 有序查找,在节点p的n个真前驱中查找e,查找成功返回节点地址，返回不大于e的最大者
 template<class T>
 Posi(T) List<T>::search(T const& e, int n, Posi(T) p)
 {
@@ -252,6 +260,22 @@ template<class T>
 Posi(T) List<T>::search(T const &e)
 {
 	return search(e, _size, trailer);
+}
+
+// 从起始于p的n个节点中找到区间内最大值
+template<class T>
+Posi(T) List<T>::selectMAX(Posi(T) p , int n)
+{
+	Posi(T) max = p;//初始化max指向第一个节点
+	int old_n = n;
+	for (Posi(T) cur = p; 1 < n;n--)
+	{
+		if (!((cur = cur->succ)->data < max->data))//max <= cur
+		{
+			max = cur;//更新最大节点位置
+	}
+		}
+	return max;//返回最大节点位置
 }
 
 
@@ -344,6 +368,64 @@ int List<T>::uniquify()
 		}
 	}
 	return oldSize - _size;//返回删除元素个数
+}
+
+//整体排序
+template<class T>
+void List<T>::sort()
+{
+	sort(first(), _size);
+}
+
+
+//区间排序
+template<class T>
+void List<T>::sort(Posi(T) p, int n)
+{
+	switch (rand()%1)
+	{
+	case 0://选择排序
+		selectSort(p, n);
+		break;
+	/*case 2:
+		break;*/
+	default://插入排序
+		insertSort(p, n);
+		break;
+	}
+}
+
+//选择排序
+template<class T>
+void List<T>::selectSort(Posi(T) p, int n)
+{
+	Posi(T) head = p->pred;
+	Posi(T) tail = p;
+	for (int i = 0; i < n;i++)
+	{
+		tail = tail->succ;
+	}
+	while (1 < n)
+	{
+		Posi(T) max = selectMAX(head ->succ, n);
+		insertAsPred(tail, remove(max));
+		tail = tail->pred;
+		n--;
+	}
+	
+}
+
+//插入排序
+template<class T>
+void List<T>::insertSort(Posi(T) p, int n)
+{
+	Posi(T) nur = p;
+	for (int i = 0; i < n; i++)
+	{
+		insertAsPred(search(nur->data,i,p), nur->data);
+		nur = nur->succ;
+		remove(nur->pred);
+	}
 }
 
 

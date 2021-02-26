@@ -1,5 +1,6 @@
 #include<iostream>
 #include"List.hpp"
+#include<time.h>
 using namespace std;
 
 void visitDouble(int &i)
@@ -70,7 +71,14 @@ void Test01()
 
 	//li3
 	cout << "li3: ";
+	for (int i = 0; i < 10; i++)
+	{
+		li3.insertAsFirst(i);
+	}
+
+	li3.sort();
 	li3.traverse(visitDouble);//±éÀú¼Ó±¶
+	p3 = li3.first();
 	for (int i = 0; i < li3.size(); i++)
 	{
 		cout << p3->data << " ";
@@ -94,6 +102,7 @@ void Test01()
 
 int main()
 {
+	srand((unsigned int)time(NULL));
 	Test01();
 	system("pause");
 	return 0;
