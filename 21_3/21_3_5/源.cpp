@@ -43,6 +43,32 @@ bool paren(const char exp[], int lo, int hi)//exp[lo,hi)
 	return !vs.size();
 }
 
+bool stackPermutation(int B[],int n) 
+{ 
+	VStack<int> S; 
+	VStack<int> A;
+	int i = 0;
+	for (int k = n;  0 < k ; k--)
+		A.push(k);//<1,2,3,4,5,6...]
+	
+	while (A.size() || S.size())//A S同时为空时退出循环
+	{
+		if ( A.size() && (!S.size()|| B[i] != S.top()))//A不为空 并且 S为空 或者 S栈顶不为B栈底时
+			S.push(A.pop());//A出栈 并压到 S里
+		else if (S.size() && B[i] == S.top())//S不为空 并且 S栈顶即为B栈底时
+		{
+			S.pop();//S出栈
+			i++;    //B入栈
+		}
+		else//A为空 且 S栈顶不为B栈底
+		{
+			return false;
+		}
+	}
+	return true;
+	
+}
+
 
 void test1()
 {
@@ -96,14 +122,19 @@ void test3()//测试括号匹配
 	for (char c : str)
 		cout << c;
 	cout << endl;
+}
 
-
+void test4()
+{
+	int B[] = { 4, 3, 2, 1, 5, 6, 7 };//[ 4 3 2 1 5 6 7 >
+	stackPermutation(B, sizeof(B)/sizeof(B[0]));
 }
 
 int main()
 {
 	test1();
 	//test2();
-	test3();
+	//test3();
+	test4();
 	return 0;
 }
