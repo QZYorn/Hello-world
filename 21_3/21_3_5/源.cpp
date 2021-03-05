@@ -14,6 +14,35 @@ void convert(VStack<char> &vs, int n, int base)
 	}
 }
 
+bool paren(const char exp[], int lo, int hi)//exp[lo,hi)
+{
+	VStack<char> vs;
+	while (lo++ < hi)
+	{
+		switch (exp[lo])
+		{
+		case '{':case'[':case'(':
+			vs.push(exp[lo]);
+			break;
+		case')':
+			if (!vs.size() || '(' != vs.pop())
+				return false;
+			break;
+		case']':
+			if (!vs.size() || '[' != vs.pop())
+				return false;
+			break;
+		case'}':
+			if (!vs.size() || '{' != vs.pop())
+				return false;
+			break;
+		default://∑«¿®∫≈◊÷∑˚Ã¯π˝
+			break; 
+		}
+	}
+	return !vs.size();
+}
+
 
 void test1()
 {
@@ -33,7 +62,7 @@ void test1()
 	ls1.pop();
 }
 
-void test2()
+void test2()//≤‚ ‘Ω¯÷∆◊™ªª
 {
 	VStack<char> vs;
 	int source, base;
@@ -49,9 +78,32 @@ void test2()
 	}
 }
 
+void test3()//≤‚ ‘¿®∫≈∆•≈‰
+{
+	char a[] = "a / ( b [ i - 1 ] [ j + 1 ] + c [ i + 1 ] [ j - 1 ] ) * 2";
+	char b[] = "a / ( b [ i - 1 ] [ j + 1 ] ) + c [ i + 1 ] [ j - 1 ] ) * 2";
+
+	bool flag = paren(a, 0, sizeof(a));
+	string str = flag ? "ÕÍ»´∆•≈‰" : " ß≈‰";
+	cout << "a[]";
+	for (char c : str)
+		cout << c;
+	cout << endl;
+
+	flag = paren(b, 0, sizeof(b));
+	str = flag ? "ÕÍ»´∆•≈‰" : " ß≈‰";
+	cout << "b[]";
+	for (char c : str)
+		cout << c;
+	cout << endl;
+
+
+}
+
 int main()
 {
 	test1();
-	test2();
+	//test2();
+	test3();
 	return 0;
 }
