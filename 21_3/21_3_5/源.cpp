@@ -3,6 +3,7 @@
 using namespace std;
 #include<cstdlib>
 
+#include"Queue.hpp"
 #include"Stack.hpp"
 #define N_OPTR 9//运算符总数
 //             加，减，乘，除，乘方，阶乘，左括号，右括号，起止符和终止符
