@@ -3,6 +3,21 @@
 using namespace std;
 
 #include"Stack.hpp"
+#define N_OPTR 9//运算符总数
+//             加，减，乘，除，乘方，阶乘，左括号，右括号，起止符和终止符
+typedef enum {ADD,SUB,MUL,DIV,  POW,  FAC,    L_P,    R_P,      EOE}Operator;
+const char pri[N_OPTR][N_OPTR] = { 
+	//          ————————当前运算符————————
+	//           +    -    *    /    ^    !    (    )   \0
+	/* |  + */	'>', '>', '<', '<', '<', '<', '<', '>', '>',
+	/* |  - */  '>', '>', '<', '<', '<', '<', '<', '>', '>',
+	/* 栈 * */  '>', '>', '>', '>', '<', '<', '<', '>', '>',
+	/* 顶 / */  '>', '>', '>', '>', '<', '<', '<', '>', '>',
+	/* 运 ^ */  '>', '>', '>', '>', '>', '<', '<', '>', '>',
+	/* 算 ! */  '>', '>', '>', '>', '>', '>', ' ', '>', '>',
+	/* 符 ( */  '<', '<', '<', '<', '<', '<', '<', '=', ' ',
+	/* |  ) */  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+	/* | \0 */ '<', '<', '<', '<', '<', '<', '<', ' ', '=' };
 
 void convert(VStack<char> &vs, int n, int base)
 {
@@ -69,6 +84,153 @@ bool stackPermutation(int B[],int n)
 	
 }
 
+Operator optrRank(char op)
+{
+	
+	switch (op)
+	{
+	case '+':
+		return ADD;
+	case '-':
+		return SUB;
+	case '*':
+		return MUL;
+	case '/':
+		return DIV;
+	case '^':
+		return POW;
+	case '!':
+		return FAC;
+	case '(':
+		return L_P;
+	case ')':
+		return R_P;
+	case '\0':
+		return EOE;
+	default:
+		exit(-1);
+	}
+}
+
+char orderBetween(char L,char R)
+{
+	return pri[optrRank(L)][ optrRank(R)];
+}
+
+float calcu(char op ,float sum)//一元操作符阶乘
+{
+	int src = 1;
+	
+	switch (op)
+	{
+	case '!':
+		while (sum-- > 0)
+			src *= (int)sum;
+	default:
+		exit(-1);
+	}
+	
+	return (float)src;
+}
+
+float calcu(char op, float sum1, float sum2)
+{
+	float tmp = sum1;
+
+	switch (op)
+	{
+	case '+':
+		return sum1 + sum2;
+	case '-':
+		return sum1 - sum2;
+	case '*':
+		return sum1 * sum2;
+	case '/':
+		return sum1 / sum2;
+	case '^':
+		while (sum2--)
+		{
+			sum1 *= tmp;
+		}
+		return sum1;
+	default:
+		exit(-1);
+	}
+}
+
+void  readNum(char* &S, VStack<float> &open)
+{
+	float src = *S - '0';
+	
+	while (isdigit(*(++S)))
+	{	//123.456
+		src *= 10;
+		//0
+		//10
+		//120
+		src += (*S - '0');
+		//1
+		//12
+		//123
+	}
+	if (*S != '.')
+	{
+		open.push(src);
+		return;
+	}
+	
+	float i = 1;
+	while (isdigit(*(++S)))
+	{
+		src += (*S - '0') * (i /= 10);
+	}
+	open.push(src);
+}
+
+float evaluate(char* S, char* &RPN)
+{
+	VStack<char> optr;//运算符栈
+	VStack<float> open;//运算数栈
+	optr.push('\0');
+
+	while (optr.size())//optr为空时退出循环
+	{
+		if (isdigit(*S))//一直读数到栈里，直到遇到运算符
+			readNum(S, open);
+		else
+		{
+			switch (orderBetween(optr.top(), *S))
+			{
+			case '>'://开始算之前的数
+				if (optr.top() == '!')
+					open.push(calcu(optr.pop(), open.pop()));
+				else
+				{
+					float op2 = open.pop();
+					float op1 = open.pop();
+					open.push(calcu(optr.pop(), op1, op2));
+				}
+				break;
+			case '<'://压进去
+				optr.push(*S);
+				S++;
+				break;
+
+			case '=':
+				optr.pop();
+				S++;
+				break;
+
+			default:
+				exit(-1);
+			}
+
+		}
+		
+	}
+	return open.pop();
+}
+
 
 void test1()
 {
@@ -130,11 +292,19 @@ void test4()
 	stackPermutation(B, sizeof(B)/sizeof(B[0]));
 }
 
+void test5()
+{
+	char S[] = "((0+(1+23)/4*5*67-8+9))";
+	char* RPN = nullptr;
+	cout << evaluate(S, RPN) << endl;
+}
+
 int main()
 {
 	test1();
 	//test2();
 	//test3();
-	test4();
+	//test4();
+	test5();
 	return 0;
 }
