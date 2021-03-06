@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include<iostream>
 using namespace std;
+#include<cstdlib>
 
 #include"Stack.hpp"
 #define N_OPTR 9//运算符总数
@@ -187,6 +188,24 @@ void  readNum(char* &S, VStack<float> &open)
 	open.push(src);
 }
 
+void append(char* &RPN, float open)
+{
+	char buf[64];
+	if (0.0 < open - (int)open)//小数
+		sprintf(buf, "%f \0", open);
+	else
+		sprintf(buf, "%d \0", (int)open);
+	RPN = (char*)realloc(RPN, sizeof(char)*(strlen(buf)+strlen(RPN)+1));//扩展空间
+	strcat(RPN, buf);
+}
+
+void append(char* &RPN , char optr)
+{
+	int n = strlen(RPN);
+	RPN = (char*)realloc(RPN, sizeof(char)*(n + 3));
+	sprintf(RPN + n, "%c \0", optr);
+}
+
 float evaluate(char* S, char* &RPN)
 {
 	VStack<char> optr;//运算符栈
@@ -196,13 +215,18 @@ float evaluate(char* S, char* &RPN)
 	while (optr.size())//optr为空时退出循环
 	{
 		if (isdigit(*S))//一直读数到栈里，直到遇到运算符
+		{
 			readNum(S, open);
+			append(RPN, open.top());
+		}
 		else
 		{
-			switch (orderBetween(optr.top(), *S))
+			char op = optr.top();
+			switch (orderBetween(op, *S))
 			{
 			case '>'://开始算之前的数
-				if (optr.top() == '!')
+				
+				if (op == '!')
 					open.push(calcu(optr.pop(), open.pop()));
 				else
 				{
@@ -210,6 +234,7 @@ float evaluate(char* S, char* &RPN)
 					float op1 = open.pop();
 					open.push(calcu(optr.pop(), op1, op2));
 				}
+				append(RPN, op);
 				break;
 			case '<'://压进去
 				optr.push(*S);
@@ -295,7 +320,9 @@ void test4()
 void test5()
 {
 	char S[] = "((0+(1+23)/4*5*67-8+9))";
-	char* RPN = nullptr;
+	
+	char* RPN = (char*)malloc(10);
+	RPN[0] = '\0';
 	cout << evaluate(S, RPN) << endl;
 }
 
