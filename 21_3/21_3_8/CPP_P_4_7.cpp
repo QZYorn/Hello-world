@@ -144,15 +144,15 @@ void test4_4()
 {
 	//4.15
 	double dval;
-	int ival;
+	int iival;
 	int *pi;
 
-	dval = ival = 0;
+	dval = iival = 0;
 	pi = 0;
 
 	//4.16
 	int p;
-	if ((p = ival) == 0)
+	if ((p = iival) == 0)
 		cout << p << endl;
 
 	//4.17
@@ -191,7 +191,7 @@ void test4_7()
 		it % 2 ? it *= 2: it;
 
 	//4.22
-	int grade;
+	int grade = 0;
 	string finalGrade;
 	finalGrade = (90 < grade) ? "high pass"
 		: (75 < grade) ? "pass"
@@ -213,6 +213,44 @@ void test4_7()
 
 }
 
+void test4_8()
+{
+	//4.27
+	unsigned long u11 = 3, u12 = 7;//0011  0111
+	cout << (u11 & u12)  << " ";//0011  3
+	cout << (u11 | u12)  << " ";//0111  7
+	cout << (u11 && u12) << " ";//1
+	cout << (u11 || u12) << endl;//1
+
+	//4.28
+	cout << sizeof(bool) << " "//1
+		<< sizeof(char) << " "//1
+		<< sizeof(short) << " "//2
+		<< sizeof(unsigned short) << " "//2
+		<< sizeof(int) << " "//4
+		<< sizeof(unsigned int) << " "//4
+		<< sizeof(long) << " "//4
+		<< sizeof(unsigned long) << " "//4
+		<< sizeof(long long) << " "//8
+		<< sizeof(unsigned long long) << " "//8
+		<< sizeof(float) << " "//4
+		<< sizeof(double) << " "//8
+		<< sizeof(long double) << endl;//8
+
+	//4.29
+	int x[10];
+	int *p = x;
+	cout << sizeof(x) / sizeof(*x) << endl;//40/4
+	cout << sizeof(p) / sizeof(*p) << endl;//4/4
+
+	//4.30
+	int i = 0;
+	int j = 0;
+	int a = sizeof i + j;
+	a = sizeof (i + j);
+
+}
+
 
 
 int main()
@@ -222,6 +260,8 @@ int main()
 	//test3_5_3();
 	//test3_5_4();
 	//test3_6();
-	test4_4();
+	//test4_4();
+	//test4_7();
+	test4_8();
 	return 0;
 }
