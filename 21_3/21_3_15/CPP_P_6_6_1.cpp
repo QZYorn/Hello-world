@@ -3,6 +3,9 @@ using namespace std;
 #include<iostream>
 #include<string>
 #include<vector>
+#include"Person.h"
+#include"Sales_data.h"
+#include"Screen.h"
 
 void test4_10()
 {
@@ -218,6 +221,33 @@ void f(double, double = 3.14)
 	cout << "f(double,double = 3.14)" << endl;
 }
 
+void calc1(int&, int&){}
+void calc1(const int&, const int&){}
+void calc2(char*, char*){}
+void calc2(const char*, const char*){}
+void calc3(char*, char*){}
+//void calc3(char* const, char* const){}
+
+int iiint(int, int)
+{
+	return 0;
+}
+int myadd(int a, int b)
+{
+	return a + b;
+}
+int mysub(int a, int b)
+{
+	return a - b;
+}
+int mymul(int a, int b)
+{
+	return a * b;
+}
+int mydiv(int a, int b)
+{
+	return a / b;
+}
 
 void test6_2_2()
 {
@@ -239,6 +269,114 @@ void test6_2_2()
 	f(42);
 	f(42, 0);
 	f(2.56, 3.14);
+
+	//6.53
+	int i = 40;
+	int j = 5;
+	calc1(i, j);
+	//calc1(1, 2);
+	//calc1(1, j);
+
+	
+	vector<int(*)(int, int)> v = { iiint, myadd, mydiv, mymul, mysub };
+	cout << "myadd = " << v[1](i, j) << endl;
+	cout << "mydiv = " << v[2](i, j) << endl;
+	cout << "mymul = " << v[3](i, j) << endl;
+	cout << "mysub = " << v[4](i, j) << endl;
+
+}
+
+void test7_1()
+{
+	string a;
+	Sales_data total;
+	if (read(cin,total))
+	{
+		Sales_data trans;
+		while (read(cin,trans))
+		{
+			if (total.bookNo == trans.bookNo)
+			{
+				total.combine(trans);
+			}
+			else
+			{
+				print(cout, total) << endl;
+				total = trans;
+			}
+		}
+		print(cout, total) << endl;
+	}
+	else
+	{
+		cerr << "No data?" << endl;
+	}
+
+	
+}
+
+struct Y;
+
+struct X
+{
+	Y *xy;
+};
+
+struct Y
+{
+	X yx;
+};
+
+typedef string Type;    //定义Type类型为string
+Type initVal();    // 全局函数声明，返回类型为string
+class Exercise
+{
+public:
+	typedef double Type;    //定义Type类型为double
+	Type setVal(Type);    //成员函数，返回类型，形参为double
+	Type initVal(){ return 0; };       //成员函数，返回类型为double（隐藏了同名的函数）
+private:
+	int val;
+};
+
+Exercise::Type Exercise::setVal(Type parm)    //成员函数的定义，返回类型为string 参数类型为double
+{
+	val = parm + initVal();    //成员函数为initVal()
+	return val;
+}
+
+struct NoDefault
+{
+	NoDefault(int);
+};
+
+struct C
+{
+	C() :cn(0){};
+	NoDefault cn;
+};
+
+void test7_1_4()
+{
+	
+	string s;
+	/*Sales_data sd1(s);
+	Sales_data sd2(s, 1, 1);*/
+	//Sales_data sd3(cin);
+
+	//7.27
+	Screen myscreen(5, 5, 'X');
+	myscreen.move(4, 0).set('#').display(cout);
+	cout << "\n";
+	myscreen.display(cout);
+	cout << "\n";
+
+	//7.41
+	Sales_data s1;
+	Sales_data s2(s);
+	Sales_data s3("a");
+	Sales_data s4("b", 0, 0.0);
+	Sales_data s5(cin);
 }
 
 int main()
@@ -247,6 +385,8 @@ int main()
 	//test5_4_1();
 	//test5_4_4();
 	//test6_1();
-	test6_2_2();
+	//test6_2_2();
+	//test7_1();
+	test7_1_4();
 	return 0;
 }
