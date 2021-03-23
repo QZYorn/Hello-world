@@ -184,6 +184,7 @@ void test10_3_3()
 	{
 		cout << i << " ";
 	}
+	cout << endl;
 }
 
 int main()
