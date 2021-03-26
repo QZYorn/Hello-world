@@ -112,6 +112,7 @@ void test11_3_1()
 	map<string, int> map_it;
 	map<string, int>::iterator mit = map_it.begin();
 	auto mit2 = map_it.begin();
+	cout << endl;
 }
 
 int main()
