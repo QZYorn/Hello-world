@@ -96,6 +96,7 @@ void test11_2_3()
 		pair<string, int> p{ str, i };
 		pvec.push_back(p);
 	}
+	cout << endl;
 
 }
 
