@@ -99,7 +99,7 @@ void test13_1_3()
 		x.push_back(x2);
 		cout << "x2" << endl;
 	}
-
+	cout << endl;
 }
 
 int main()
