@@ -100,6 +100,8 @@ void test13_1_3()
 		cout << "x2" << endl;
 	}
 	cout << endl;
+
+	cout << endl;
 }
 
 int main()
