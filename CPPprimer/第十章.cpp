@@ -99,7 +99,7 @@ void elimDups(vector<string> &words)
 	//myPrint(words);
 	sort(words.begin(), words.end());
 	//myPrint(words);
-	words.erase(unique(words.begin(), words.end()),words.end());
+	words.erase(unique(words.begin(), words.end()), words.end());
 	//myPrint(words);
 }
 
@@ -145,9 +145,9 @@ void biggies(vector<string> &words, const int sz)
 {
 	elimDups(words);
 
-	stable_sort(words.begin(), words.end(), 
-	   []( const string &s1, const string &s2)
-		 { return s1.size() < s2.size(); });
+	stable_sort(words.begin(), words.end(),
+		[](const string &s1, const string &s2)
+	{ return s1.size() < s2.size(); });
 
 	////find_if
 	//auto iter = find_if(words.begin(), words.end(), 
@@ -157,9 +157,9 @@ void biggies(vector<string> &words, const int sz)
 	//for_each(iter, words.end(), [](const string &s){ cout << s << " "; });
 
 	//partition
-	auto iter = stable_partition(words.begin(), words.end(), 
-		[sz]( const string &s)
-			{ return s.size() >= sz; });
+	auto iter = stable_partition(words.begin(), words.end(),
+		[sz](const string &s)
+	{ return s.size() >= sz; });
 
 	for_each(words.begin(), iter, [](const string &s){cout << s << " "; });
 	cout << endl;
@@ -178,7 +178,7 @@ void test10_3_2()
 
 	//10.16
 	vector<string> words{ "the", "quick", "red", "fox", "jumps", "over", "the", "slow", "red", "turtle" };
-	biggies(words,5);
+	biggies(words, 5);
 }
 
 void test10_3_3()
@@ -187,14 +187,14 @@ void test10_3_3()
 
 	//10.20
 	vector<string> words{ "there", "quickly", "red", "fox", "jumps", "over", "the", "slowky", "red", "turtle" };
-	int count = count_if(words.begin(), words.end(), []( const string &s )
-													   { return s.size() >= 6; });
+	int count = count_if(words.begin(), words.end(), [](const string &s)
+	{ return s.size() >= 6; });
 	cout << "单词大于等于6的个数：" << count << endl;
 
 	//10.21
 	int i = 10;
-	auto lam = [&i] () mutable -> bool
-				{return i == 0 ? false : i--; };
+	auto lam = [&i]() mutable -> bool
+	{return i == 0 ? false : i--; };
 	while (lam())
 	{
 		cout << i << " ";
@@ -211,10 +211,10 @@ void biggiesBind(vector<string> &words, vector<int>::size_type sz)
 {
 	elimDups(words);
 
-	stable_sort(words.begin(), words.end(), bind(isShorter,_1,_2));
+	stable_sort(words.begin(), words.end(), bind(isShorter, _1, _2));
 
-	
-	auto iter = stable_partition(words.begin(), words.end(), bind(check_size,_1,sz));
+
+	auto iter = stable_partition(words.begin(), words.end(), bind(check_size, _1, sz));
 
 	for_each(words.begin(), iter, [](const string &s){cout << s << " "; });
 	cout << endl;
@@ -270,10 +270,10 @@ void test10_4_1()
 void fileOddEven(const string &ifile, const string &oofile, const string &eofile)
 {
 	ifstream ifs(ifile);
-	istream_iterator<int> ifs_iter(ifs),eof;
+	istream_iterator<int> ifs_iter(ifs), eof;
 	ofstream oofs(oofile);
 	ofstream eofs(eofile);
-	ostream_iterator<int> oofs_iter(oofs," "), eofs_iter(eofs,"\n");
+	ostream_iterator<int> oofs_iter(oofs, " "), eofs_iter(eofs, "\n");
 	while (ifs_iter != eof)
 	{
 
@@ -295,7 +295,7 @@ void test10_4_2()
 
 	//10.29
 	ifstream ifs("test.txt");
-	istream_iterator<string> str_in(ifs),seof;
+	istream_iterator<string> str_in(ifs), seof;
 	vector<string> svec;
 	copy(str_in, seof, back_inserter(svec));
 	ostream_iterator<string> str_out(cout, " ");
@@ -307,7 +307,7 @@ void test10_4_2()
 	istream_iterator<int> int_in(cin), ieof;
 	vector<int> ivec(int_in, ieof);
 	sort(ivec.begin(), ivec.end());
-	ostream_iterator<int> int_out(cout," ");
+	ostream_iterator<int> int_out(cout, " ");
 	cout << "copy:";
 	copy(ivec.begin(), ivec.end(), int_out);
 
@@ -380,7 +380,7 @@ void test10_6()
 	cout << "\n10_6" << endl;
 
 	//10.42
-	list<int> li1{ 1, 1, 2, 3, 4, 4, 5, 6, 7, 8, 8, 5};
+	list<int> li1{ 1, 1, 2, 3, 4, 4, 5, 6, 7, 8, 8, 5 };
 	li1.sort();
 	li1.unique();
 
