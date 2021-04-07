@@ -28,7 +28,7 @@ public:
 	HasPtr(const string & s = string()) :
 		ps(new string(s)), i(0){}
 	HasPtr(const HasPtr& hs) :ps(new string(*hs.ps)), i(hs.i){}
-	
+	HasPtr(HasPtr&& hs) :ps(hs.ps), i(hs.i){ hs.ps = nullptr; }
 	HasPtr& operator=(const HasPtr& hs)
 	{
 		if (this == &hs)
@@ -38,6 +38,13 @@ public:
 		i = hs.i;
 		return *this;
 	}
+	//HasPtr& operator=(HasPtr&& hs){}
+	/*HasPtr& operator=(HasPtr hs)
+	{
+		swap(*this, hs);
+		return *this;
+	}
+	*/
 
 	bool operator<(const HasPtr& hs)
 	{
@@ -354,8 +361,11 @@ class Message
 public:
 	Message(string value = " ") :contents(value){}
 	Message(const Message& m);
+	Message(Message&& m);
+	
 	~Message(){ remove_from_Floder(); }
 
+	Message& operator=(Message&& m);
 	Message& operator=(const Message& m);
 	void save(Floder& f);
 	void remove(Floder& f);
@@ -368,6 +378,7 @@ private:
 
 	void add_to_Floder(const Message& m);//拷贝后，本message应加入 目标message所在的每个floder中
 	void remove_from_Floder();//从本message所在的每个floder中删去本message
+	void move_Floder(Message *m);
 };
 
 Message::Message(const Message& m):
@@ -375,6 +386,20 @@ Message::Message(const Message& m):
 {
 	//本对象为拷贝构造出来的，与源对象共享源目录，源目录均应插入本对象
 	add_to_Floder(m);
+}
+
+Message::Message(Message&& m):
+	contents(move(m.contents))
+{
+	move_Floder(&m);
+}
+
+Message& Message::operator=(Message&& m)
+{
+	remove_from_Floder();
+	contents = move(m.contents);
+	move_Floder(&m);
+	return *this;
 }
 
 Message& Message::operator=(const Message& m)
@@ -423,6 +448,19 @@ void Message::remove_from_Floder()
 		f->remMsg(this);
 	}
 }
+
+void Message::move_Floder(Message *m)
+{
+	floder = move(m->floder);
+	for (auto f : floder)
+	{
+		f->remMsg(m);
+		f->addMsg(this);
+	}
+	m->floder.clear();
+}
+
+
 void Floder::addMsg(Message* mp)
 {
 	message.insert(mp);
@@ -437,8 +475,10 @@ class StrVec
 public:
 	StrVec() ://默认构造
 		elements(nullptr), first_free(nullptr), cap(nullptr){}
+	StrVec(StrVec&& sv);//移动构造函数
 	StrVec(initializer_list<string> ini_list);
 	StrVec(const StrVec& sv);//拷贝构造
+	StrVec& operator=(StrVec&& sv);//移动赋值
 	StrVec& operator=(const StrVec& sv);//拷贝赋值
 	~StrVec();//析构
 
@@ -463,6 +503,12 @@ private:
 };
 allocator<string> StrVec::alloc;
 
+StrVec::StrVec(StrVec&& sv)//移动构造函数
+	:elements(sv.elements), first_free(sv.first_free), cap(sv.cap)
+{
+	sv.elements = sv.first_free = sv.cap = nullptr;
+}
+
 StrVec::StrVec(initializer_list<string> ini_list)
 {
 	auto newdata = alloc_n_copy(ini_list.begin(), ini_list.end());
@@ -476,6 +522,20 @@ StrVec::StrVec(const StrVec& sv)
 	elements = newdata.first;
 	first_free = cap = newdata.second;
 }
+
+StrVec& StrVec::operator=(StrVec&& sv)//移动赋值
+{
+	if (&sv != this)
+	{
+		free();
+		elements = sv.elements;
+		first_free = sv.first_free;
+		cap = sv.cap;
+		sv.elements = sv.first_free = sv.cap = nullptr;
+	}
+	return *this;
+}
+
 StrVec& StrVec::operator=(const StrVec& sv)
 {
 	auto data = alloc_n_copy(sv.begin(), sv.end());
@@ -607,12 +667,13 @@ void test13_6_1()
 	int && r4 = vi[0] * f();
 }
 
+
 int main()
 {
 	//test13_1_3();
 	//test13_1_6();
 	//test13_3();
 	//test13_5();
-	test13_6_1();
+	//test13_6_1();
 	return 0;
 }
