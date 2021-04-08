@@ -12,6 +12,7 @@ class Vehicle
 	friend Vehicle operator+(const Vehicle& l_vcl, const Vehicle& r_vcl);
 	friend bool operator==(const Vehicle& l_vcl, const Vehicle& r_vcl);
 	friend bool operator!=(const Vehicle& l_vcl, const Vehicle& r_vcl);
+	explicit operator bool(){ return (_name_no == make_pair(string(),string())) && (_count == 0) && (_price < 0.0001); }
 
 
 public:
