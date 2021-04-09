@@ -14,7 +14,7 @@
 #include<algorithm>
 //#include<numeric>
 #include<functional>
-#include<memory.h>
+#include<memory>
 //#include<stdlib.h>
 using namespace std;
 using namespace std::placeholders;
@@ -68,9 +68,32 @@ void test15_3()
 	br2.print(); //≈……˙¿‡
 }
 
+void test15_8()
+{
+	cout << "\n15.8" << endl;
+
+	//15.28
+	vector<Quote> qvec;
+	Bulk_quote b1("aaa", 50, 4, 0.8);
+	Bulk_quote b2("bbb", 20, 10, 0.5);
+	qvec.push_back(b1);
+	qvec.push_back(b2);
+	cout << qvec.begin()->net_price(15) << endl;
+	cout << qvec.back().net_price(15) << endl;
+	auto bq1 = make_shared<Bulk_quote>(b1);
+	auto bq2 = make_shared<Bulk_quote>(b2);
+	vector<shared_ptr<Quote>> sqvec;
+	sqvec.push_back(bq1);
+	sqvec.push_back(bq2);
+	cout << (*sqvec.begin())->net_price(15) << endl;
+	cout << sqvec.back()->net_price(15) << endl;
+
+}
+
 int main()
 {
 	//test15_2_2(); 
-	test15_3();
+	//test15_3();
+	test15_8();
 	return 0;
 }
