@@ -87,7 +87,7 @@ void test15_8()
 	sqvec.push_back(bq2);
 	cout << (*sqvec.begin())->net_price(15) << endl;
 	cout << sqvec.back()->net_price(15) << endl;
-
+	cout << endl;
 }
 
 int main()
