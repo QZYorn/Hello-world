@@ -5,50 +5,52 @@
 #include<algorithm>
 using namespace std;
 
-
-class StrVec
+template<typename T>
+class Vec
 {
-	friend bool operator==(const StrVec& l_svec, const StrVec& r_svec);
-	friend bool operator!=(const StrVec& l_svec, const StrVec& r_svec);
-	friend bool operator< (const StrVec& l_svec, const StrVec& r_svec);
+	friend bool operator==(const Vec& l_svec, const Vec& r_svec);
+	friend bool operator!=(const Vec& l_svec, const Vec& r_svec);
+	friend bool operator< (const Vec& l_svec, const Vec& r_svec);
 
 
 public:
-	StrVec() ://默认构造
+	Vec() ://默认构造
 		elements(nullptr), first_free(nullptr), cap(nullptr){}
-	StrVec(StrVec&& sv);//移动构造函数
-	StrVec(initializer_list<string> ini_list);
-	StrVec(const StrVec& sv);//拷贝构造
-	StrVec& operator=(StrVec&& sv);//移动赋值
-	StrVec& operator=(const StrVec& sv);//拷贝赋值
-	StrVec& operator=(initializer_list<string> ini_list);
-	string& operator[](size_t n){ return *(begin() + n); }
-	const string& operator[](size_t n)const{ return *(begin() + n); }
+	Vec(Vec&& sv);//移动构造函数
+	Vec(initializer_list<T> ini_list);
+	Vec(const Vec& sv);//拷贝构造
+	Vec& operator=(Vec&& sv);//移动赋值
+	Vec& operator=(const Vec& sv);//拷贝赋值
+	Vec& operator=(initializer_list<T> ini_list);
+	T& operator[](size_t n){ return *(begin() + n); }
+	const T& operator[](size_t n)const{ return *(begin() + n); }
 
-	~StrVec();//析构
+	~Vec();//析构
 
-	void push_back(const string &s);
+	void push_back(const T &s);
 	size_t  size()	  const{ return first_free - elements; }
 	size_t  capacity()const{ return cap - elements; }
-	string* begin()   const{ return elements; }
-	string* end()	  const{ return first_free; }
+	T* begin()   const{ return elements; }
+	T* end()	  const{ return first_free; }
 	void reserve(const size_t si);
-	void resize(const size_t si, string s = "");
+	void resize(const size_t si, T s = "");
 private:
-	static allocator<string> alloc;
+	static allocator<T> alloc;
 
-	pair<string*, string*> alloc_n_copy(const string* b, const string* e);//分配内存，并拷贝给定范围内元素
+	pair<T*, T*> alloc_n_copy(const T* b, const T* e);//分配内存，并拷贝给定范围内元素
 	void chk_n_alloc(){ if (size() == capacity()) reallocate(0); }//检查剩余空间并根据情况分配内存
 	void free();	   //销毁构造的元素并释放内存
 	void reallocate(size_t si); //分配新内存
 
-	string *elements;   //内存中的首元素
-	string *first_free;//最后一个实际元素之后的位置
-	string *cap;	   //分配的内存尾后位置
+	T *elements;   //内存中的首元素
+	T *first_free;//最后一个实际元素之后的位置
+	T *cap;	   //分配的内存尾后位置
 };
-allocator<string> StrVec::alloc;
+template<typename T>
+allocator<T> Vec::alloc;
 
-bool operator==(const StrVec& l_svec, const StrVec& r_svec)
+template<typename T>
+bool operator==(const Vec& l_svec, const Vec& r_svec)
 {
 	if (l_svec.size() != r_svec.size())
 		return false;
@@ -59,11 +61,13 @@ bool operator==(const StrVec& l_svec, const StrVec& r_svec)
 	}
 	return true;
 }
-bool operator!=(const StrVec& l_svec, const StrVec& r_svec)
+template<typename T>
+bool operator!=(const Vec& l_svec, const Vec& r_svec)
 {
 	return !(l_svec == r_svec);
 }
-bool operator<(const StrVec& l_svec, const StrVec& r_svec)
+template<typename T>
+bool operator<(const Vec& l_svec, const Vec& r_svec)
 {
 	if (l_svec.size() != r_svec.size())
 		return l_svec.size() < r_svec.size();
@@ -76,28 +80,31 @@ bool operator<(const StrVec& l_svec, const StrVec& r_svec)
 }
 
 
-
-StrVec::StrVec(StrVec&& sv)//移动构造函数
+template<typename T>
+Vec<T>::Vec(Vec&& sv)//移动构造函数
 :elements(sv.elements), first_free(sv.first_free), cap(sv.cap)
 {
 	sv.elements = sv.first_free = sv.cap = nullptr;
 }
 
-StrVec::StrVec(initializer_list<string> ini_list)
+template<typename T>
+Vec<T>::Vec(initializer_list<T> ini_list)
 {
 	auto newdata = alloc_n_copy(ini_list.begin(), ini_list.end());
 	elements = newdata.first;
 	cap = first_free = newdata.second;
 }
 
-StrVec::StrVec(const StrVec& sv)
+template<typename T>
+Vec<T>::Vec(const Vec& sv)
 {
 	auto newdata = alloc_n_copy(sv.begin(), sv.end());
 	elements = newdata.first;
 	first_free = cap = newdata.second;
 }
 
-StrVec& StrVec::operator=(StrVec&& sv)//移动赋值
+template<typename T>
+Vec<T>& Vec<T>::operator=(Vec&& sv)//移动赋值
 {
 	if (&sv != this)
 	{
@@ -110,7 +117,8 @@ StrVec& StrVec::operator=(StrVec&& sv)//移动赋值
 	return *this;
 }
 
-StrVec& StrVec::operator=(const StrVec& sv)
+template<typename T>
+Vec<T>& Vec::operator=(const Vec& sv)
 {
 	auto data = alloc_n_copy(sv.begin(), sv.end());
 	free();
@@ -118,28 +126,33 @@ StrVec& StrVec::operator=(const StrVec& sv)
 	first_free = cap = data.second;
 	return *this;
 }
-StrVec& StrVec::operator=(initializer_list<string> ini_list)
+template<typename T>
+Vec<T>& Vec<T>::operator=(initializer_list<T> ini_list)
 {
 	auto newdata = alloc_n_copy(ini_list.begin(), ini_list.end());
 	elements = newdata.first;
 	cap = first_free = newdata.second;
 }
 
-StrVec::~StrVec()
+template<typename T>
+Vec<T>::~Vec()
 {
 	free();
 }
-void StrVec::push_back(const string &s)
+template<typename T>
+void Vec<T>::push_back(const T &s)
 {
 	chk_n_alloc();
 	alloc.construct(first_free++, s);
 }
 
-void StrVec::reserve(const size_t si)
+template<typename T>
+void Vec<T>::reserve(const size_t si)
 {
 	reallocate(si);
 }
-void StrVec::resize(const size_t si, string s)
+template<typename T>
+void Vec<T>::resize(const size_t si, T s)
 {
 	if (size() < si)
 	{
@@ -157,18 +170,20 @@ void StrVec::resize(const size_t si, string s)
 	}
 }
 
-pair<string*, string*>
-StrVec::alloc_n_copy(const string* b, const string* e)
+template<typename T>
+pair<T*, T*>
+Vec<T>::alloc_n_copy(const T* b, const T* e)
 {
 	auto data = alloc.allocate(e - b);
 	return{ data, uninitialized_copy(b, e, data) };
 }
 
-void StrVec::free()
+template<typename T>
+void Vec<T>::free()
 {
 	if (elements != nullptr)
 	{
-		for_each(elements, first_free, [](string& s){alloc.destroy(&s); });
+		for_each(elements, first_free, [](T& s){alloc.destroy(&s); });
 		/*for (auto p = first_free - 1; p != elements; --p)
 		{
 		alloc.destroy(p);
@@ -176,7 +191,8 @@ void StrVec::free()
 		alloc.deallocate(elements, cap - elements);
 	}
 }
-void StrVec::reallocate(size_t si)
+template<typename T>
+void Vec<T>::reallocate(size_t si)
 {
 	auto newcapacity = si;
 	if (si <= size())
@@ -194,7 +210,8 @@ void StrVec::reallocate(size_t si)
 	cap = newdata + newcapacity;
 }
 
-void print(StrVec& sv)
+template<typename T>
+void print(Vec<T>& sv)
 {
 	for (auto i : sv)
 		cout << i << " ";
