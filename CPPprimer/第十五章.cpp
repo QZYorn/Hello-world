@@ -19,6 +19,7 @@
 using namespace std;
 using namespace std::placeholders;
 #include"Quote.h"
+#include"QueryResult.h"
 
 class base
 {
@@ -87,13 +88,38 @@ void test15_8()
 	sqvec.push_back(bq2);
 	cout << (*sqvec.begin())->net_price(15) << endl;
 	cout << sqvec.back()->net_price(15) << endl;
-	cout << endl;
+
+}
+
+void test15_9_3()
+{
+	cout << "\n15.9.3" << endl;
+
+	//15.34
+	//WordQuery()*3
+	//AndQuery()*1
+	//OrQuery()*1
+	//Query()*6
+
+	//WordQuery::rep + WordQuery::rep
+	//BinQuery::rep + WordQuery::rep
+	//BinQuery::rep
+	//Query::operator<<
+
+	//WordQuery::eval + WordQuery::eval
+	//BinQuery::AndQuery::eval+ WordQuery::eval
+	//BinQuery::OrQuery::eval
+
+	//15.36
+	Query q = Query("fiery") & Query("bird") | Query("wind");
+	cout << q;
 }
 
 int main()
 {
 	//test15_2_2(); 
 	//test15_3();
-	test15_8();
+	//test15_8();
+	test15_9_3();
 	return 0;
 }
