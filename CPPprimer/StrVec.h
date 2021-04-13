@@ -28,6 +28,7 @@ public:
 	~StrVec();//Îö¹¹
 
 	void push_back(const string &s);
+	template<typename... Args> void emplace_back(const Args&... args);
 	size_t  size()	  const{ return first_free - elements; }
 	size_t  capacity()const{ return cap - elements; }
 	string* begin()   const{ return elements; }
@@ -134,6 +135,14 @@ void StrVec::push_back(const string &s)
 	chk_n_alloc();
 	alloc.construct(first_free++, s);
 }
+
+template<typename... Args> 
+void StrVec::emplace_back(const Args&... args)
+{
+	chk_n_alloc();
+	alloc.construct(first_free++, forward<Args>(args)...);
+}
+
 
 void StrVec::reserve(const size_t si)
 {

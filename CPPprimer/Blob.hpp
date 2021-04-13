@@ -20,6 +20,7 @@ public:
 	typedef vector<T>::size_type size_type;
 	Blob() :data(make_shared<vector<T>>()){}
 	Blob(initializer_list<T> il) :data(make_shared<vector<T>>(il)){}
+	template<typename IT>Blob(IT it1, IT it2) : data(make_shared<vector<T>>(it1, it2)){}
 	size_type size() const{ return data->size(); }
 	bool empty() const{ return data->empty(); }
 	void push_back(const T &s) { data->push_back(s); }

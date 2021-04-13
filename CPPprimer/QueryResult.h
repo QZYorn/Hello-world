@@ -8,7 +8,7 @@
 #include<map>
 #include<sstream>
 using namespace std;
-
+#include"DebugDelete.hpp"
 //#define DEBUG
 
 class QueryResult;
@@ -16,7 +16,7 @@ class TextQuery
 {
 public:
 	typedef size_t line_no;
-	TextQuery(ifstream &ifs) :file(new vector<string>)
+	TextQuery(ifstream &ifs) :file(new vector<string>,DebugDelete())
 	{
 		string s;
 		int curr = 0;
