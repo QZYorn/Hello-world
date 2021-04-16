@@ -261,6 +261,7 @@ void test17()
 	fs.seekp(0, fstream::end);//定位到文件尾
 	fs << '\n';//输入一个换行符
 	fs.close();
+	cout << endl;
 }
 
 int main()
