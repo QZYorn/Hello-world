@@ -7,6 +7,8 @@
 #include<set>
 #include<map>
 #include<sstream>
+#include<algorithm>
+
 using namespace std;
 #include"DebugDelete.hpp"
 //#define DEBUG

@@ -4,6 +4,7 @@
 #include<string>
 #include<vector>
 #include<memory>
+#include<exception>
 using namespace std;
 
 
@@ -18,7 +19,8 @@ class Blob
 
 public:
 	typedef vector<T>::size_type size_type;
-	Blob() :data(make_shared<vector<T>>()){}
+	Blob() try : data(make_shared<vector<T>>()){}
+		catch(const bad_alloc &e){}
 	Blob(initializer_list<T> il) :data(make_shared<vector<T>>(il)){}
 	template<typename IT>Blob(IT it1, IT it2) : data(make_shared<vector<T>>(it1, it2)){}
 	size_type size() const{ return data->size(); }
