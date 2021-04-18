@@ -21,12 +21,27 @@
 #include<random>
 #include<ctime>
 #include<iomanip>
+#include<exception>
 #include"Sales_data.h"
 using namespace std;
 //using namespace std::placeholders;
 
+//19.1
+void *operator new(size_t size)
+{
+	if (void *men = malloc(size))
+	return men;
+	else
+		throw bad_alloc();
+}
+void operator delete(void *men) 
+{
+	free(men);
+}
+
 void test19()
 {
+	//19.1
 
 }
 
