@@ -17,6 +17,36 @@ class QueryResult;
 class TextQuery
 {
 public:
+	/////////////////////////////   嵌套类   ///////////////////////////////
+	class QueryResult
+	{
+		friend ostream& print(ostream& os, QueryResult& qr);
+
+		typedef size_t line_no;
+	public:
+		QueryResult(string s,
+			shared_ptr<vector<string>> p,
+			shared_ptr<set<line_no>> l)
+			:word(s), file(p), line(l){}
+		shared_ptr<set<line_no>> get_line()
+		{
+			return line;
+		}
+		shared_ptr<vector<string>> get_file()
+		{
+			return file;
+		}
+	private:
+		//查询单词
+		string word;
+		//全部文本
+		shared_ptr<vector<string>> file;
+		//单词出现行号集合
+		shared_ptr<set<line_no>> line;
+
+	};
+	/////////////////////////////  嵌套类结束  //////////////////////////////
+
 	typedef size_t line_no;
 	TextQuery(ifstream &ifs) :file(new vector<string>,DebugDelete())
 	{
@@ -49,36 +79,10 @@ private:
 	map<string, shared_ptr<set<line_no>>> word_line;
 };
 
-class QueryResult
-{
-	friend ostream& print(ostream& os, QueryResult& qr);
 
-	typedef size_t line_no;
-public:
-	QueryResult(string s,
-		shared_ptr<vector<string>> p,
-		shared_ptr<set<line_no>> l)
-		:word(s), file(p), line(l){}
-	shared_ptr<set<line_no>> get_line()
-	{
-		return line;
-	}
-	shared_ptr<vector<string>> get_file()
-	{
-		return file;
-	}
-private:
-	//查询单词
-	string word;
-	//全部文本
-	shared_ptr<vector<string>> file;
-	//单词出现行号集合
-	shared_ptr<set<line_no>> line;
-
-};
 
 //返回{单词s，全部文本，单词s出现的行号集合set}
-QueryResult TextQuery::query(const string& s) const
+TextQuery::QueryResult TextQuery::query(const string& s) const
 {
 	auto line = word_line.find(s);
 	static shared_ptr<set<line_no>> nodata(new set<line_no>);
@@ -102,7 +106,7 @@ protected:
 	virtual ~Query_base() = default;
 private:
 	//eval使用给定TextQuery进行与当前Query匹配的查询，生成查询结果QueryResult并返回
-	virtual QueryResult eval(const TextQuery &tq)const = 0;
+	virtual TextQuery::QueryResult eval(const TextQuery &tq)const = 0;
 	//rep表示查询的一串string
 	virtual string rep()const = 0;
 };
@@ -117,7 +121,7 @@ class WordQuery :public Query_base
 #endif
 	}
 
-	QueryResult eval(const TextQuery& tq)const
+	TextQuery::QueryResult eval(const TextQuery& tq)const
 	{
 		return tq.query(query_word);
 	}
@@ -141,7 +145,7 @@ class Query
 	friend Query operator|(const Query &lq, const Query &rq);
 public:
 	Query(const string &s) :q(new WordQuery(s)){}
-	QueryResult eval(const TextQuery& tq)const{ return q->eval(tq); }
+	TextQuery::QueryResult eval(const TextQuery& tq)const{ return q->eval(tq); }
 
 	string rep() const
 	{
@@ -180,7 +184,7 @@ class NotQuery :public Query_base
 	}
 	
 
-	QueryResult eval(const TextQuery& tq)const
+	TextQuery::QueryResult eval(const TextQuery& tq)const
 	{
 		auto result = query.eval(tq);
 		auto ret_line = make_shared<set<line_no>>();
@@ -198,7 +202,7 @@ class NotQuery :public Query_base
 				++beg;
 			}
 		}
-		return QueryResult(rep(), result.get_file(), ret_line);
+		return TextQuery::QueryResult(rep(), result.get_file(), ret_line);
 	}
 
 	string rep()const
@@ -248,14 +252,14 @@ class AndQuery :public BinQuery
 #endif
 	}
 
-	QueryResult eval(const TextQuery &tq)const
+	TextQuery::QueryResult eval(const TextQuery &tq)const
 	{
 		auto left = lhs.eval(tq), right = rhs.eval(tq);
 		auto ret_line = make_shared<set<line_no>>(left.get_line()->begin(), left.get_line()->end());
 		set_intersection(left.get_line()->begin(), left.get_line()->end(),
 			right.get_line()->begin(), right.get_line()->end(),
 			inserter(*ret_line, ret_line->begin()));
-		return QueryResult(rep(), left.get_file(), ret_line);
+		return TextQuery::QueryResult(rep(), left.get_file(), ret_line);
 	}
 };
 
@@ -269,12 +273,12 @@ class OrQuery :public BinQuery
 #endif
 	}
 
-	QueryResult eval(const TextQuery &tq)const
+	TextQuery::QueryResult eval(const TextQuery &tq)const
 	{
 		auto left = lhs.eval(tq), right = rhs.eval(tq);
 		auto ret_line = make_shared<set<line_no>>(left.get_line()->begin(),left.get_line()->end());
 		ret_line->insert(right.get_line()->begin(), right.get_line()->end());
-		return QueryResult(rep(), left.get_file(), ret_line);
+		return TextQuery::QueryResult(rep(), left.get_file(), ret_line);
 	}
 };
 
