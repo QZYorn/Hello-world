@@ -90,10 +90,10 @@ public:
 	T& operator[](Rank r);
 
 	//返回向量大小
-	Rank size();
+	Rank size() const;
 
 	//判断是否为空
-	bool empty(){ return !_size; }
+	bool empty() const{ return !_size; }
 
 	//返回向量容量
 	int capacity();
@@ -488,7 +488,7 @@ T& MyVector<T>::operator[](Rank r)
 
 //返回向量大小
 template<class T>
-Rank MyVector<T>::size()
+Rank MyVector<T>::size() const
 {
 	return _size;
 }

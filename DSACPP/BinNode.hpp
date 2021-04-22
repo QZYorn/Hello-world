@@ -2,6 +2,7 @@
 #include<random>
 #include<time.h>
 #include"Stack.hpp"
+#include"Queue.hpp"
 #define BinNodePosi(T) BinNode<T>* 
 using namespace std;
 
@@ -55,22 +56,32 @@ public:
 
 	BinNodePosi(T) succ();//£¨ÖĞĞòÏÂ£©µ±Ç°½ÚµãÖ±½Óºó¼Ì
 
-	template<class VST> void travLeveL(VST &);//×ÓÊ÷²ã´Î±éÀú
-	template<class VST> void travPre(VST &);  //×ÓÊ÷ÏÈĞò±éÀú
+	template<class VST> void travLeveL(VST &visit);//×ÓÊ÷²ã´Î±éÀú
+	template<class VST> void travPre  (VST &visit);			  //×ÓÊ÷ÏÈĞò±éÀú#Í³Ò»Èë¿Ú
 	template<class VST> void travPre_1(BinNodePosi(T), VST &);//×ÓÊ÷ÏÈĞò±éÀú#µü´ú°æ±¾1
 	template<class VST> void travPre_2(BinNodePosi(T), VST &);//×ÓÊ÷ÏÈĞò±éÀú#µü´ú°æ±¾2
 	template<class VST> void travPre_R(BinNodePosi(T), VST &);//×ÓÊ÷ÏÈĞò±éÀú#µİ¹é°æ±¾
 
-	template<class VST> void travIn(VST &);     //×ÓÊ÷ÖĞĞò±éÀú#Í³Ò»Èë¿Ú
-	template<class VST> void travIn_1(BinNodePosi(T), VST &);   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾1
-	template<class VST> void travIn_2(BinNodePosi(T), VST &);   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾2
-	template<class VST> void travIn_3(BinNodePosi(T), VST &);   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾3
-	template<class VST> void travIn_4(BinNodePosi(T), VST &);   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾4
-	template<class VST> void travIn_R(BinNodePosi(T), VST &);   //×ÓÊ÷ÖĞĞò±éÀú#µİ¹é°æ±¾
-	template<class VST> void travPost(VST &);	  //×ÓÊ÷ºóĞò±éÀú
+	template<class VST> void travIn  (VST &visit);					//×ÓÊ÷ÖĞĞò±éÀú#Í³Ò»Èë¿Ú
+	template<class VST> void travIn_1(BinNodePosi(T) t, VST &visit);//×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾1
+	template<class VST> void travIn_2(BinNodePosi(T) t, VST &visit);//×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾2
+	template<class VST> void travIn_3(BinNodePosi(T) t, VST &visit);//×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾3
+	template<class VST> void travIn_4(BinNodePosi(T) t, VST &visit);//×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾4
+	template<class VST> void travIn_R(BinNodePosi(T) t, VST &visit);//×ÓÊ÷ÖĞĞò±éÀú#µİ¹é°æ±¾
+
+	template<class VST> void travPost  (VST &visit);					  //×ÓÊ÷ºóĞò±éÀúÍ³Ò»Èë¿Ú
+	template<class VST> void travPost_1(BinNodePosi(T) t, VST &visit);	  //×ÓÊ÷ºóĞò±éÀú#µü´ú°æ±¾1
+	template<class VST> void travPost_2(BinNodePosi(T) t, VST &visit);	  //×ÓÊ÷ºóĞò±éÀú#µü´ú°æ±¾2
+	template<class VST> void travPost_R(BinNodePosi(T) t, VST &visit);	  //×ÓÊ÷ºóĞò±éÀú#µİ¹é°æ±¾
+
+
+
 private:
-	template<class VST> static void visitAlongLeftBranch//×ó·ÖÖ§ÒÀ´Î±éÀú²¢ÈëÕ»£¬Ö±ÖÁÎŞ×ó·ÖÖ§µÄ½Úµã
-				(BinNodePosi(T), VST&, Stack_V<BinNodePosi(T)>&);
+	template<class VST> static void visitAlongLeftBranch//×ó·ÖÖ§ÒÀ´Î±éÀú²¢½«ÓÒº¢×ÓÈëÕ»£¬Ö±ÖÁÎŞ×ó·ÖÖ§µÄ½Úµã
+				(BinNodePosi(T) t, VST &visit, Stack_V<BinNodePosi(T)> &s);
+	template<class VST> static void goAlongLeftBranch   //×ó·ÖÖ§ÒÀ´ÎÈëÕ»£¬Ö±ÖÁÎŞ×ó·ÖÖ§µÄ½Úµã
+				(BinNodePosi(T) t, Stack_V<BinNodePosi(T)> &s);
+	static void gotoHLVFL(Stack_V<BinNodePosi(T)> &s);//ÔÚÒÔsÕ»¶¥½ÚµãÎª¸ùµÄ×ÓÊ÷ÖĞ£¬Ñ°ÕÒ×îÉî×óº¢×Ó
 };
 template<class T>
 int BinNode<T>::size()
@@ -100,14 +111,46 @@ BinNodePosi(T) BinNode<T>::insertAsRC(T const &e)
 template<class T>
 BinNodePosi(T) BinNode<T>::succ()//£¨ÖĞĞòÏÂ£©µ±Ç°½ÚµãÖ±½Óºó¼Ì
 {
+	//¼ÇÂ¼µ±Ç°½Úµã
+	BinNodePosi(T) t = this;
 
+	//ÖĞĞòÏÂµ±Ç°½ÚµãµÄÖ±½Óºó¼Ì
+	//1.ÎªÆä ÓÒ×ÓÊ÷µÄ×î×ó ×îµÍº¢×Ó
+	if (HasRChild(*t))//ÓĞÓÒº¢×Ó
+	{
+		t = t->rChild;//½øÈëÓÒ×ÓÊ÷Ñ°ÕÒ
+		while (HasLChild(*t))//ÑØ×Å×ó·ÖÖ§²»¶ÏÉîÈë
+		{
+			t = t->lChild;
+		}
+	}
+		
+	//2.ÎªÆä ËùÊô×ó×ÓÊ÷µÄ ×îµÍ¸ù½Úµã
+	else		    //ÎŞÓÒ×ÓÊ÷
+	{
+		while (IsRChild(*t))//·Ç×ó×ÓÊ÷¸ù½Úµã
+		{
+			t = t->parent;//ÏòÉÏ»ØËİÑ°ÕÒµÚÒ»¸ö×÷Îª×ó×ÓÊ÷µÄ½Úµã
+		}
+		t = t->parent;//¸Ã½Úµã¸¸Ç×¼´ÎªÓµÓĞ×ó×ÓÊ÷µÄ¸ù½Úµã
+	}
+	return t;
 }
 
 //²ã´Î±éÀú
 template<class T>
 template<class VST> void BinNode<T>::travLeveL(VST &visit)//×ÓÊ÷²ã´Î±éÀú
 {
-
+	Queue<BinNodePosi(T)> Q;
+	Q.enqueue(this);//¸ù½ÚµãÈë¶Ó
+	
+	while (!Q.empty())//¶ÓÁĞÇå¿ÕÇ°Ñ­»·
+	{
+		BinNodePosi(T) t = Q.dequeue();//È¡³ö¶ÓÊ×½Úµã
+		visit(t->data); //²¢·ÃÎÊ
+		if (HasLChild)Q.enqueue(t->lChild);//ÈôÓĞ×óº¢×Ó£¬ÔòÈë¶Ó
+		if (HasRChild)Q.enqueue(t->rChild);//ÈôÓĞÓÒº¢×Ó£¬ÔòÈë¶Ó
+	}
 }
 
 //ÏÈĞò±éÀú
@@ -130,7 +173,7 @@ template<class VST> void BinNode<T>::travPre_1(BinNodePosi(T) t,VST &visit)//×ÓÊ
 	while (!s.empty())
 	{
 		t = s.pop();
-		visit(t);
+		visit(t->data);
 		if (HasRChild(*t))s.push(t->rChild);//ÏÈ°ÑÓÒ¶ù×ÓÈëÕ»£¬ÏÈ½øºó³ö
 		if (HasLChild(*t))s.push(t->lChild);//ÔÙ°Ñ×ó¶ù×ÓÈëÕ»£¬ºó½øÏÈ³ö
 	}
@@ -175,17 +218,60 @@ template<class VST> void BinNode<T>::travIn(VST &visit)     //×ÓÊ÷ÖĞĞò±éÀú
 template<class T>
 template<class VST> void BinNode<T>::travIn_1(BinNodePosi(T) t, VST &visit)   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾1
 {
-
+	Stack_V<BinNodePosi(T)> s;
+	while (true)
+	{
+		goAlongLeftBranch(t, s);		//´Óµ±Ç°½Úµã³ö·¢£¬ÑØ×Å×ó²àÁ´ÖğÅúÈëÕ»
+		if (s.empty())break;			//Ö±ÖÁËùÓĞ½Úµã´¦ÀíÍê±Ï
+		t = s.pop(); visit(t->data);	//µ¯³öÕ»¶¥²¢·ÃÎÊ
+		t = t->rChild;					//×ªÏòÓÒ×ÓÊ÷
+	}
 }
 template<class T>
 template<class VST> void BinNode<T>::travIn_2(BinNodePosi(T) t, VST &visit)   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾2
 {
-
+	Stack_V<BinNodePosi(T)> s;
+	while (true)
+	{
+		if (t)//ÑØ×Å×óÍ¨Â·²»¶ÏÉîÈë
+		{
+			s.push(t);//ÒÀ´ÎÈëÕ»
+			t = t->lChild;
+		}
+		else if (!s.empty())//Õ»·Ç¿ÕÇÒ×óÍ¨Â·µ½Í·Ê±
+		{
+			t = s.pop(); visit(t->data);//È¡³öÕ»¶¥²¢·ÃÎÊ
+			t = t->rChild;//×ªÈëÓÒ×ÓÊ÷
+		}
+		else
+			break;
+	}
 }
 template<class T>
 template<class VST> void BinNode<T>::travIn_3(BinNodePosi(T) t, VST &visit)   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾3
 {
-
+	bool back = false;//»ØËİ±ê¼Ç
+	while (true)
+	{
+		if (!back && HasLChild(*t))//¸Õ¸ÕÃ»ÓĞ½øĞĞ»ØËİ ÇÒ ÓĞ×ó×ÓÊ÷
+		{
+			t = t->lChild;//ÑØ×Å×óÍ¨Â·²»¶ÏÉîÈë
+		}
+		else//¸Õ¸Õ½øĞĞÁË»ØËİ »òÕß Ã»ÓĞ×ó×ÓÊ÷
+		{
+			visit(t->data);//×ó×ÓÊ÷±éÀú½áÊøºó·ÃÎÊµ±Ç°½ÚµãÊı¾İÓò
+			if (HasRChild(*t))//ÓĞÓÒ×ÓÊ÷
+			{
+				t = t->rChild;//½øÈëÓÒ×ÓÊ÷½øĞĞ±éÀú
+				back = false;//»ØËİ±ê¼ÇÇå³ı
+			}
+			else//Ã»ÓĞÓÒ×ÓÊ÷
+			{
+				if (t = t->succ())break;//½øĞĞ»ØËİ£¬»ØËİºóÈôÎªnullptr£¬ÔòËµÃ÷ÒÑ»ØËİµ½¸ù½Úµã¸¸Ç×£¬Õû¿ÃÊ÷ÒÑ¾­±éÀú½áÊø
+				back = true;//»ØËİ±ê¼ÇÖÃÎ»
+			}
+		}
+	}
 }
 template<class T>
 template<class VST> void BinNode<T>::travIn_4(BinNodePosi(T) t, VST &visit)   //×ÓÊ÷ÖĞĞò±éÀú#µü´ú°æ±¾4
@@ -194,25 +280,84 @@ template<class VST> void BinNode<T>::travIn_4(BinNodePosi(T) t, VST &visit)   //
 
 }
 template<class T>
-template<class VST> void BinNode<T>::travIn_R(BinNodePosi(T) t, VST &visit)      //×ÓÊ÷ÖĞĞò±éÀú#µİ¹é°æ±¾
+template<class VST> void BinNode<T>::travIn_R(BinNodePosi(T) t, VST &visit)   //×ÓÊ÷ÖĞĞò±éÀú#µİ¹é°æ±¾
 {
-
+	if (!t)return;//µİ¹é»ù
+	travIn_R(t->lChild, visit);
+	visit(t->data);
+	travIn_R(t->rChild, visit);
 }
+
 //ºóĞò±éÀú
 template<class T>
-template<class VST> void BinNode<T>::travPost(VST &visit)	  //×ÓÊ÷ºóĞò±éÀú
+template<class VST> void BinNode<T>::travPost(VST &visit)	  //×ÓÊ÷ºóĞò±éÀúÍ³Ò»Èë¿Ú
 {
-	
+	int random = u5(e);
+	switch (random)
+	{
+	case 0: travPost_1(this, visit); break;//µü´ú°æ±¾#1
+	case 1: travPost_2(this, visit); break;//µü´ú°æ±¾#2
+	default:travPost_R(this, visit); break;//µİ¹é°æ±¾
+	}
 }
 
 template<class T>
-template<class VST> static void BinNode<T>::visitAlongLeftBranch//×ó·ÖÖ§ÒÀ´Î±éÀú²¢ÈëÕ»£¬Ö±ÖÁÎŞ×ó·ÖÖ§µÄ½Úµã
+template<class VST> void BinNode<T>::travPost_1(BinNodePosi(T) t, VST &visit)	  //×ÓÊ÷ºóĞò±éÀú#µü´ú°æ±¾1
+{
+	Stack_V<BinNodePosi(T)> s;//¸¨ÖúÕ»
+	s.push(t);//t¸ù½ÚµãÑ¹ÈëÕ»ÄÚ
+	while (!s.empty())//±éÀúÒÔtÎª¸ù½ÚµãµÄ×ÓÊ÷£¬Ö±ÖÁÕ»¿Õ
+	{
+		if (s.top() != t->parent)//µ±Õ»¶¥²»ÎªÉÏÒ»¸ö·ÃÎÊ½ÚµãµÄ¸¸Ç×Ê±£¬Ôò±Ø¶¨ÎªÆäÓÒĞÖµÜ
+		{
+			gotoHLVFL(s);//ÔÚµ±Ç°ÒÔÕ»¶¥Îª¸ù½ÚµãµÄ×ÓÊ÷ÖĞ£¬Ñ°ÕÒ×ó²à×îÉîÒ¶½Úµã£¬²¢½«ÑØÍ¾½ÚµãÈëÕ»
+			t = s.pop();visit(t->data);//È¡³öÕ»¶¥£¨¼´ÉÏÒ»¸ö·ÃÎÊ½ÚµãµÄºó¼Ì£©²¢·ÃÎÊ
+		}
+	}
+}
+template<class T>
+template<class VST> void BinNode<T>::travPost_2(BinNodePosi(T) t, VST &visit)	  //×ÓÊ÷ºóĞò±éÀú#µü´ú°æ±¾2
+{
+
+}
+template<class T>
+template<class VST> void BinNode<T>::travPost_R(BinNodePosi(T) t, VST &visit)	  //×ÓÊ÷ºóĞò±éÀú#µİ¹é°æ±¾
+{
+	if (!t)return;//µİ¹é»ù
+	travPost_R(t->lChild, visit);
+	travPost_R(t->rChild, visit);
+	visit(t->data);
+}
+
+template<class T>
+template<class VST> void BinNode<T>::visitAlongLeftBranch//×ó·ÖÖ§ÒÀ´Î±éÀú²¢½«ÓÒº¢×ÓÈëÕ»£¬Ö±ÖÁÎŞ×ó·ÖÖ§µÄ½Úµã
 											(BinNodePosi(T) t, VST& visit, Stack_V<BinNodePosi(T)>& s)
 {
 	while (t)//µ±Ç°½ÚµãÎª¿ÕÊ±½áÊøÑ­»·
 	{
 		visit(t->data);//·ÃÎÊµ±Ç°½ÚµãÊı¾İÓò
-		if (HasRChild(*t))s.push(t);//·Ç¿ÕÓÒº¢×ÓÈëÕ»
+		if (HasRChild(*t))s.push(t->rChild);//·Ç¿ÕÓÒº¢×ÓÈëÕ»
 		t = t->rChild;//ÑØ×Å×ó·ÖÖ§½øÈëÏÂÒ»²ã
 	}
+}
+template<class T>
+template<class VST> void BinNode<T>::goAlongLeftBranch   //×ó·ÖÖ§ÒÀ´ÎÈëÕ»£¬Ö±ÖÁÎŞ×ó·ÖÖ§µÄ½Úµã
+											(BinNodePosi(T) t, Stack_V<BinNodePosi(T)>& s)
+{
+	while (t)
+	{
+		s.push(t);//µ±Ç°½ÚµãÈëÕ»
+		t = t->lChild;//ÑØ×Å×ó·ÖÖ§½øÈëÏÂÒ»²ã
+	}
+}
+template<class T>
+static void BinNode<T>::gotoHLVFL(Stack_V<BinNodePosi(T)> &s)//ÔÚÒÔsÕ»¶¥½ÚµãÎª¸ùµÄ×ÓÊ÷ÖĞ£¬Ñ°ÕÒ×îÉî×óº¢×ÓÒ¶½Úµã
+{
+	//t = s.top();//¿½±´Õ»¶¥
+	while (HasChild(*t))//ÈôÓĞº¢×Ó
+	{
+		BinNodePosi(T) t = s.top();//×ªÈëÕ»¶¥½Úµã×ÓÊ÷
+		if (HasRChild(*t))s.push(t->rChild);//ÈôÓĞÓÒº¢×ÓÔòÓÅÏÈÈëÕ»
+		if (HasLChild(*t))s.push(t->lChild);//È»ºóÅĞ¶ÏÊÇ·ñÓĞ×óº¢×Ó£¬ÓĞÔòÈëÕ»
+	}//µÖ´ïÒ¶½ÚµãÊ±ÍË³öÑ­»·
 }

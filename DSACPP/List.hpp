@@ -40,13 +40,15 @@ public:
 
 	//只读接口
 	//规模大小
-	Rank size()const;
+	Rank size() const;
+	//判断是否为空
+	bool empty() const{ return !_size; }
 	//重载[]操作符 循秩访问，效率低下
-	T& operator[](Rank r)const;
+	T& operator[](Rank r) const;
 	//首节点位置
-	Posi(T) first()const;
+	Posi(T) first() const;
 	//末节点位置
-	Posi(T) last()const;
+	Posi(T) last() const;
 	//区间列表 无序查找,在节点p的n个真前驱中查找e,查找成功返回节点地址，失败返回NULL
 	Posi(T) find(T const& e, int n, Posi(T) p);
 	//整体列表 无序查找,查找成功返回节点地址，失败返回NULL

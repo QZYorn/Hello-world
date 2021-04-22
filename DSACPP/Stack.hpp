@@ -13,7 +13,7 @@ public:
 };
 
 template<class T>
-class Stack_L :public List<T>
+class LStack :public List<T>
 {
 public:
 	void push(T const &e){ this->insertAsLast(e); }//»Î’ª
