@@ -13,6 +13,6 @@ int main()
 	cout << u(e) << endl;
 	cout << u(e) << endl;
 	cout << u(e) << endl;
-
+	cout << endl;
 	return 0;
 }
