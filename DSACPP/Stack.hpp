@@ -1,10 +1,10 @@
 #pragma once
 #include"ListNode.hpp"
 #include"List.hpp"
-#include"MyVector.hpp"
+#include"Vector.hpp"
 
 template<class T>
-class Stack_V :public MyVector<T>
+class Stack :public Vector<T>
 {
 public:
 	void push(T const &e){ insert(size(), e); }//»Î’ª

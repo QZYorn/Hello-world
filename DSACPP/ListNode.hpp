@@ -1,3 +1,4 @@
+#pragma once
 #define Posi(T) ListNode<T>*
 
 template<class T>
