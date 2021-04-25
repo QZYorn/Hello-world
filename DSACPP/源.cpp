@@ -18,5 +18,8 @@ int main()
 	List<int> ilis;
 	Queue<int> ique;
 	Stack<int> istk;
+	GraphMatrix<char, float> gm;
+	gm.insert('a');
+	cout << gm.vertex(0) << endl;
 	return 0;
 }

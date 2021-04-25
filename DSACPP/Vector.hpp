@@ -61,7 +61,10 @@ protected:
 public:
 	//构造函数
 	//默认 构造函数
-	Vector(int c = DEFAULT_CAPACITY);
+	//Vector(int c = DEFAULT_CAPACITY);
+
+	//容量为c,规模为s,所有元素初始化为v
+	Vector(int c = DEFAULT_CAPACITY, int s = 0, T v = 0);
 
 	//拷贝数组区间 构造函数
 	Vector(T const* A, Rank lo, Rank hi);
@@ -121,6 +124,9 @@ public:
 
 	//在秩r处插入元素e,返回秩
 	Rank insert(Rank r, T const& e);
+
+	//在容器尾插入元素e，返回秩
+	Rank insert(T const &e){ return insert(_size, e); }
 
 	//区间删除,返回删除元素个数
 	int remove(Rank lo, Rank hi);
@@ -411,11 +417,19 @@ void Vector<T>::merge(Rank lo, Rank mi, Rank hi)
 
 //构造函数
 //默认 构造函数
+//template<class T>
+//Vector<T>::Vector(int c = DEFAULT_CAPACITY)
+//{
+//	_size = 0;
+//	_elem = new T[_capacity = max(c, DEFAULT_CAPACITY)];
+//}
+
+//容量为c,规模为s,所有元素初始化为v
 template<class T>
-Vector<T>::Vector(int c = DEFAULT_CAPACITY)
+Vector<T>::Vector(int c = DEFAULT_CAPACITY, int s = 0, T v = 0)
 {
-	_size = 0;
 	_elem = new T[_capacity = max(c, DEFAULT_CAPACITY)];
+	for (_size = 0; _size < s; _elem[_size++] = v);
 }
 
 //拷贝数组区间 构造函数
