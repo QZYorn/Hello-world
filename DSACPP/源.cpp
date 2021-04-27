@@ -21,5 +21,6 @@ int main()
 	GraphMatrix<char, float> gm;
 	gm.insert('a');
 	cout << gm.vertex(0) << endl;
+	cout << endl;
 	return 0;
 }
