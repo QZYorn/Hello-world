@@ -122,9 +122,28 @@ void Graph<Tv, Te>::BCC(int, int&, Stack<int>&)//(连通域)基于DFS的双连通分量分解
 }
 
 template<typename Tv, typename Te>
-bool Graph<Tv, Te>::Tsort(int, int&, Stack<Tv>*)//(连通域)基于DFS的拓扑排序算法
+bool Graph<Tv, Te>::Tsort(int v, int &clock, Stack<Tv> *S)//(连通域)基于DFS的拓扑排序算法
 {
-
+	//精简版
+	status(v) = DISCOVERED;//初始化
+	for (int u = firstNbr(v); -1 < u; u = nextNbr(v, u))
+	{
+		if (status(u) == UNDISCOVERED)
+		{
+			parent(u) = v;
+			if (!Tsort(u, clock, S))//若从u出发的拓扑排序不存在
+				return false;//则整个图的拓扑排序都不存在
+			break;
+		}
+		else if (status(u) == DISCOVERED)
+		{
+			return false;
+			break;
+		}
+	}
+	status(v) = VISITED;
+	S->push(vertex(v));//v顶点访问完毕时才将其数据推入栈中
+	return true;//v及其后台皆可拓扑排序
 }
 
 template<typename Tv, typename Te>
@@ -165,9 +184,21 @@ void Graph<Tv, Te>::bcc(int)//基于DFS的双连通分量分解算法
 }
 
 template<typename Tv, typename Te>
-Stack<Tv>* Graph<Tv, Te>::tSort(int)//基于DFS的拓扑排序算法
+Stack<Tv>* Graph<Tv, Te>::tSort(int s)//基于DFS的拓扑排序算法
 {
-
+	reset(); int clock = 0; int v = s;
+	Stack<Tv>* S = new Stack<Tv>;
+	do
+	{
+		if (status(v) == UNDISCOVERED)//从“未发现”的顶点转入
+			if (!Tsort(v, clock, S))//若v所在连通域不为DAG
+			{
+				while (!S->empty())//则将栈清空
+					S->pop();
+				break;//然后直接结束全图遍历
+			}
+	} while (s != v = (++v % n));
+	return S;//若为DAG则S内各顶点自顶向底排列;否则（非DAG，不存在拓扑排序）S为空
 }
 
 template<typename Tv, typename Te>
