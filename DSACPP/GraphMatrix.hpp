@@ -42,7 +42,7 @@ public:
 	GraphMatrix(){ n = e = 0; }//构造函数
 	~GraphMatrix()//析构函数
 	{ 
-		for (int i = 0; i < n;++i)
+		for (int i = 0; i < n; ++i)
 			for (int j = 0; j < n; ++j)
 				delete E[i][j];//逐条删除
 	}
@@ -86,6 +86,8 @@ int GraphMatrix<Tv,Te>::insert(Tv const &v)//插入顶点，返回编号
 		E[i].insert(nullptr);
 	++n;//顶点数增加
 	E.insert(Vector<Edge<Te>*>(n, n, (Edge<Te>*)nullptr));//创建新顶点对应的边向量
+	for (int i = 0; i < n; ++i)
+		E[n - 1][i] = nullptr;
 	return V.insert(Vertex<Tv>(v));//顶点向量增加一个顶点
 }
 

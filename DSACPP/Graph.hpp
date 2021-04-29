@@ -114,12 +114,41 @@ void Graph<Tv, Te>::DFS(int v, int &clock)//(连通域)深度优先搜索算法
 	fTime(v) = ++clock;
 
 }
-
+#define hca(v) (fTime(v))//利用闲置的fTime()充当hac()
 template<typename Tv, typename Te>
-void Graph<Tv, Te>::BCC(int, int&, Stack<int>&)//(连通域)基于DFS的双连通分量分解算法
+void Graph<Tv, Te>::BCC(int v, int &clock, Stack<int> &S)//(连通域)基于DFS的双连通分量分解算法
 {
-
+	status(v) = DISCOVERED; hca(v) = dTime(v)= ++clock; 
+	S.push(v);
+	for (int u = firstNbr(v); -1 < u; u = nextNbr(v, u))
+	{
+		switch (status(u))
+		{
+		case UNDISCOVERED:
+			parent(u) = v;
+			type(v, u) = TREE;
+			BCC(u, clock, S);
+			if (hca(u) < dTime(v))//若u（通过后向边）可指向v的真祖先
+				hca(v) = min(hca(u), hca(v));
+			else//以v为关节顶点,u及u往下 为BCC双连通域
+			{
+				while (v != S.pop());
+				S.push(v);//把v塞回去
+			}
+			break;
+		case DISCOVERED:
+			type(v, u) = BACKWARD;
+			if (u != parent(v))
+				hca(v) = min(hca(v), dTime(u));
+			break;
+		default:
+			type(v, u) = (dTime(v) < dTime(u)) ? FORWARD : CROSS;
+			break;
+		}//switch
+	}//for
+	status(v) = VISITED;
 }
+#undef hca
 
 template<typename Tv, typename Te>
 bool Graph<Tv, Te>::Tsort(int v, int &clock, Stack<Tv> *S)//(连通域)基于DFS的拓扑排序算法
@@ -166,7 +195,7 @@ void Graph<Tv, Te>::bfs(int s)//广度优先搜索算法
 }
 
 template<typename Tv, typename Te>
-void Graph<Tv, Te>::dfs(int)//深度优先搜索算法
+void Graph<Tv, Te>::dfs(int s)//深度优先搜索算法
 {
 	reset(); int clock = 0; int v = s;//初始化
 	do//逐一检查各顶点
@@ -178,9 +207,19 @@ void Graph<Tv, Te>::dfs(int)//深度优先搜索算法
 }
 
 template<typename Tv, typename Te>
-void Graph<Tv, Te>::bcc(int)//基于DFS的双连通分量分解算法
+void Graph<Tv, Te>::bcc(int s)//基于DFS的双连通分量分解算法
 {
-
+	reset(); int clock = 0; int v = s;
+	Stack<int> S;//栈S存放已访问的节点
+	do
+	{
+		if (UNDISCOVERED == status(v))
+		{
+			BCC(v, clock, S);
+			S.pop();//遍历返回后，弹出S栈顶，当前连通域的起点
+		}
+			
+	} while (s != v = (++v % n));
 }
 
 template<typename Tv, typename Te>

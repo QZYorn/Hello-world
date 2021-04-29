@@ -473,11 +473,9 @@ void Vector<T>::copyFrom(T const* A, Rank lo, Rank hi)
 template<class T>
 Vector<T>::~Vector()
 {
-	assert(_elem != NULL);
+	//assert(_elem != NULL);
 	delete[] _elem;
 	_elem = NULL;
-	_size = 0;
-	_capacity = 0;
 }
 
 
