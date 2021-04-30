@@ -176,10 +176,31 @@ bool Graph<Tv, Te>::Tsort(int v, int &clock, Stack<Tv> *S)//(Á¬Í¨Óò)»ùÓÚDFSµÄÍØÆ
 }
 
 template<typename Tv, typename Te>
-template<typename PU> void Graph<Tv, Te>::PFS(int, PU)//(Á¬Í¨Óò)ÓÅÏÈ¼¶ËÑË÷¿ò¼Ü
+template<typename PU> void Graph<Tv, Te>::PFS(int s, PU prioUpdater)//(Á¬Í¨Óò)ÓÅÏÈ¼¶ËÑË÷¿ò¼Ü
 {
-
-}
+	priority(s) = 0;//ÓÅÏÈ¼¶ÖÃÎª×î´ó
+	status(s) = VISITED;
+	parent(s) = -1//Æğµãs¼ÓÈëPFSÊ÷ÖĞ
+	while (1)
+	{
+		for (int w = firstNbr(s); -1 < w; w = nextNbr(s, w)) //Ã¶¾ÙsµÄËùÓĞÁÚ¾Ó
+			prioUpdater(this, s, w); //Ê¹ÓÃ ÓÅÏÈ¼¶¸üĞÂÆ÷ ¸üĞÂw¼°Æä¸¸¶¥µãµÄÓÅÏÈ¼¶
+		for (int shorter = INT_MAX, w = 0; w < n; ++w)//Ã¶¾ÙÈ«²¿¶¥µã
+		{
+			if (UNDISCOVERED == status(w))//ÈôÓĞÉĞÎ´¼ÓÈë±éÀúÊ÷ÖĞµÄ¶¥µã
+							if (priority(w) < shorter)//Ñ¡³öÏÂÒ»¸öÓÅÏÈ¼¶×î¸ßµÄ¶¥µã
+							{
+								shorter = priority(w);
+								s = w;//s×îÖÕÖ¸ÏòÄ¿Ç°ÎªÖ¹ÓÅÏÈ¼¶×î¸ßµÄ¶¥µã
+							}
+		}
+			
+		if (status(s) == VISITED)//Ö±µ½ËùÓĞ¶¥µã¶¼ÒÑ¼ÓÈë±éÀúÊ÷£¬²ÅÖÕÖ¹whileÑ­»·
+			break;
+		status(s) = VISITED;
+		type(parent(s), s) = TREE;//½«s¼°Æä¸¸¶¥µãµÄÁª±ß¼ÓÈë±éÀúÊ÷
+	}//while
+}//Í¨¹ı¶¨Òå¾ßÌåµÄÓÅÏÈ¼¶¸üĞÂ²ßÂÔprioUpdater£¬¼´¿ÉÊµÏÖ²»Í¬µÄËã·¨¹¦ÄÜ
 
 //Ëã·¨
 template<typename Tv,typename Te>
@@ -190,7 +211,7 @@ void Graph<Tv, Te>::bfs(int s)//¹ã¶ÈÓÅÏÈËÑË÷Ëã·¨
 	{
 		if (UNDISCOVERED == status(v))//Èô¶¥µã×´Ì¬Îª¡°Î´·¢ÏÖ¡±
 			BFS(v, clock);//Ôò´Ó¸Ã¶¥µã³ö·¢½øĞĞÒ»´Î¹ã¶ÈÓÅÏÈ±éÀú
-	} while (s != v = ( ++v % n));//°´ĞòºÅ¼ì²é£¬¹Ê²»Â©²»ÖØ
+	} while (s != (v = ( ++v % n)));//°´ĞòºÅ¼ì²é£¬¹Ê²»Â©²»ÖØ
 	//´Ós¶¥µã³ö·¢£¬ÏòºóÒÀ´Î±éÀúÖÁn£¬ÔÙ»ØÍ·µ½0¿ªÊ¼±éÀú,ÔÙµ½s-1¡£¹ÊÎŞÂÛÆğÊ¼ÓÚºÎ´¦¶¼ÄÜ±éÀúÍêÈ«
 }
 
@@ -202,7 +223,7 @@ void Graph<Tv, Te>::dfs(int s)//Éî¶ÈÓÅÏÈËÑË÷Ëã·¨
 	{
 		if (UNDISCOVERED == status(v))//Èô¶¥µã×´Ì¬Îª¡°Î´·¢ÏÖ¡±
 			DFS(v, clock);//Ôò´Ó¸Ã¶¥µã³ö·¢½øĞĞÒ»´Î¹ã¶ÈÓÅÏÈ±éÀú
-	} while (s != v = (++v % n));//°´ĞòºÅ¼ì²é£¬¹Ê²»Â©²»ÖØ
+	} while (s != (v = (++v % n)));//°´ĞòºÅ¼ì²é£¬¹Ê²»Â©²»ÖØ
 	//´Ós¶¥µã³ö·¢£¬ÏòºóÒÀ´Î±éÀúÖÁn£¬ÔÙ»ØÍ·µ½0¿ªÊ¼±éÀú,ÔÙµ½s-1¡£¹ÊÎŞÂÛÆğÊ¼ÓÚºÎ´¦¶¼ÄÜ±éÀúÍêÈ«
 }
 
@@ -219,7 +240,7 @@ void Graph<Tv, Te>::bcc(int s)//»ùÓÚDFSµÄË«Á¬Í¨·ÖÁ¿·Ö½âËã·¨
 			S.pop();//±éÀú·µ»Øºó£¬µ¯³öSÕ»¶¥£¬µ±Ç°Á¬Í¨ÓòµÄÆğµã
 		}
 			
-	} while (s != v = (++v % n));
+	} while (s != (v = (++v % n)));
 }
 
 template<typename Tv, typename Te>
@@ -236,7 +257,7 @@ Stack<Tv>* Graph<Tv, Te>::tSort(int s)//»ùÓÚDFSµÄÍØÆËÅÅĞòËã·¨
 					S->pop();
 				break;//È»ºóÖ±½Ó½áÊøÈ«Í¼±éÀú
 			}
-	} while (s != v = (++v % n));
+	} while (s != (v = (++v % n)));
 	return S;//ÈôÎªDAGÔòSÄÚ¸÷¶¥µã×Ô¶¥Ïòµ×ÅÅÁĞ;·ñÔò£¨·ÇDAG£¬²»´æÔÚÍØÆËÅÅĞò£©SÎª¿Õ
 }
 
@@ -253,7 +274,12 @@ void Graph<Tv, Te>::dijkstra(int)//×î¶ÌÂ·¾¶DijkstraËã·¨
 }
 
 template<typename Tv, typename Te>
-template<typename PU> void Graph<Tv, Te>::pfs(int, PU)//ÓÅÏÈ¼¶ËÑË÷¿ò¼Ü
+template<typename PU> void Graph<Tv, Te>::pfs(int s, PU prioUpdater)//ÓÅÏÈ¼¶ËÑË÷¿ò¼Ü
 {
-
+	reset(); int v = s;
+	do
+	{
+		if (UNDISCOVERED == status(v))
+			PFS(v, prioUpdater);
+	} while (s != (v = (++v % n)));
 }

@@ -43,8 +43,12 @@ public:
 	~GraphMatrix()//析构函数
 	{ 
 		for (int i = 0; i < n; ++i)
+		{
 			for (int j = 0; j < n; ++j)
+			{
 				delete E[i][j];//逐条删除
+			}
+		}
 	}
 
 	//顶点静态操作

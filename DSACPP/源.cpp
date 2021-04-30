@@ -21,6 +21,6 @@ int main()
 	GraphMatrix<char, float> gm;
 	gm.insert('a');
 	cout << gm.vertex(0) << endl;
-	//Vector<Vector<int>> iivec;
+	//Vector<Vector<List<int>*>> iivec;
 	return 0;
 }

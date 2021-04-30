@@ -78,8 +78,6 @@ public:
 	//基本类型 拷贝构造子操作
 	void copyFrom(T const* A, Rank lo, Rank hi);
 
-
-
 	//析构函数
 	~Vector();
 
@@ -118,15 +116,25 @@ public:
 
 
 
-	//只写接口
+	//可写接口
+	//左值拷贝赋值操作
+	Vector<T>& operator=(Vector<T> const& V);
+
+	//右值拷贝赋值操作
+	Vector<T>& operator=(Vector<T> && V);
+
 	//将 秩i 元素 换成 指定元素
 	void put(Rank r, T const& e);
 
 	//在秩r处插入元素e,返回秩
 	Rank insert(Rank r, T const& e);
 
+	Rank insert(Rank r, T &&e);
+
 	//在容器尾插入元素e，返回秩
 	Rank insert(T const &e){ return insert(_size, e); }
+
+	Rank insert(T &&e){ return insert(_size, move(e)); }
 
 	//区间删除,返回删除元素个数
 	int remove(Rank lo, Rank hi);
@@ -566,7 +574,27 @@ Rank Vector<T>::search(T const& e)
 
 
 
-//只写接口
+//可写接口
+//左值拷贝赋值操作
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector<T> const& V)
+{
+	if (_elem)
+		delete[] _elem;//释放原有内容
+	copyFrom(V._elem, 0, V.size());//整体复制
+	return *this;//返回自身的引用，方便链式访问
+}
+
+//右值拷贝赋值操作
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector<T> && V)
+{
+	if (_elem)
+		delete[]_elem;//释放原有内容
+	copyFrom(V._elem, 0, V.size());//整体复制
+	return *this;//返回自身的引用，方便链式访问
+}
+
 //将 秩 元素 换成 指定元素
 template<class T>
 void Vector<T>::put(Rank r, T const& e)
@@ -588,6 +616,22 @@ Rank Vector<T>::insert(Rank r, T const& e)
 		_elem[i] = _elem[i - 1];
 	}
 	_elem[r] = e;//放入元素
+	_size++;//更新大小
+	return r;
+}
+
+template<class T>
+Rank Vector<T>::insert(Rank r, T &&e)
+{
+	assert(r >= 0 && r <= _size);
+
+	expandDouble();
+
+	for (int i = _size; i > r; i--)//后缀后挪一位
+	{
+		_elem[i] = _elem[i - 1];
+	}
+	_elem[r] = move(e);//放入元素
 	_size++;//更新大小
 	return r;
 }
