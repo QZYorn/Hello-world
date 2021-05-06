@@ -22,7 +22,5 @@ int main()
 	gm.insert('a');
 	cout << gm.vertex(0) << endl;
 	//Vector<Vector<List<int>*>> iivec;
-	cout << endl;
-	cout << endl;
 	return 0;
 }

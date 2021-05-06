@@ -62,6 +62,73 @@ public:
 	template<typename PU> void pfs(int, PU);//优先级搜索框架
 
 };
+
+//优先级更新器
+//广度优先遍历优先级框架
+template<typename Tv, typename Te>
+struct BfsPU
+{
+	virtual void operator()(Graph<Tv, Te> *g, int uk, int v)
+	{
+		if (DISCOVERED == g->status(v))//对于每一未被发现的邻接顶点
+		{
+			if (g->priority(v) > g->priority(uk) + 1)//若v的优先级数大于v的深度,即把v到起点的 距离 作为优先级数
+			{
+				g->priority(v) = g->priority(uk) + 1;//则把优先级数更新
+				g->parent(v) = uk;//树中，v的父亲更新为uk
+			}
+		}
+	}
+};
+//深度优先遍历优先级框架
+template<typename Tv, typename Te>
+struct DfsPU
+{
+	virtual void operator()(Graph<Tv, Te> *g, int uk, int v)
+	{
+		if (DISCOVERED == g->status(v))//对于每一未被发现的邻接顶点
+		{
+			if (g->priority(v) > g->priority(uk) - 1)//若v的优先级数小于v的深度,即把v到起点的 距离的负数 作为优先级数
+			{
+				g->priority(v) = g->priority(uk) - 1;//则把优先级数更新
+				g->parent(v) = uk;//树中，v的父亲更新为uk
+			}
+		}
+	}
+};
+//最小支撑树优先级框架
+template<typename Tv, typename Te>
+struct PrimPU
+{
+	virtual void operator()(Graph<Tv, Te> *g, int uk, int v)
+	{
+		if (DISCOVERED == g->status(v))//对于每一未被发现的邻接顶点
+		{
+			if (g->priority(v) > g->weight(uk, v))//若v的优先级数大于(uk,v)边的 权重
+			{
+				g->priority(v) = g->weight(uk, v);//则把优先级数更新
+				g->parent(v) = uk;//树中，v的父亲更新为uk
+			}
+		}
+	}
+};
+//最短路径优先级框架
+template<typename Tv, typename Te>
+struct DijkstraPU
+{
+	virtual void operator()(Graph<Tv, Te> *g, int uk, int v)
+	{
+		if (DISCOVERED == g->status(v))//对于每一未被发现的邻接顶点
+		{
+			if (g->priority(v) > g->priority(uk)+ g->weight(uk,v))//即把v到起点的 距离 作为优先级数
+			{
+				g->priority(v) = g->priority(uk) + g->weight(uk, v);//则把优先级数更新
+				g->parent(v) = uk;//树中，v的父亲更新为uk
+			}
+		}
+	}
+};
+
 //算法
 template<typename Tv, typename Te>
 void Graph<Tv, Te>::BFS(int v, int &clock)//(连通域)广度优先搜索算法
@@ -188,11 +255,11 @@ template<typename PU> void Graph<Tv, Te>::PFS(int s, PU prioUpdater)//(连通域)优
 		for (int shorter = INT_MAX, w = 0; w < n; ++w)//枚举全部顶点
 		{
 			if (UNDISCOVERED == status(w))//若有尚未加入遍历树中的顶点
-							if (priority(w) < shorter)//选出下一个优先级最高的顶点
-							{
-								shorter = priority(w);
-								s = w;//s最终指向目前为止优先级最高的顶点
-							}
+				if (priority(w) < shorter)//选出下一个优先级最高的顶点
+				{
+					shorter = priority(w);
+					s = w;//s最终指向目前为止优先级最高的顶点
+				}
 		}
 			
 		if (status(s) == VISITED)//直到所有顶点都已加入遍历树，才终止while循环
@@ -262,15 +329,29 @@ Stack<Tv>* Graph<Tv, Te>::tSort(int s)//基于DFS的拓扑排序算法
 }
 
 template<typename Tv, typename Te>
-void Graph<Tv, Te>::prim(int)//最小支撑树Prim的算法
+void Graph<Tv, Te>::prim(int s)//最小支撑树Prim的算法
 {
-
+	reset(); int v = s;
+	do
+	{
+		if (status(v) == UNDISCOVERED)//从“未发现”的顶点转入
+		{
+			PFS(v, PrimPU<Tv, Te>);
+		}
+	} while (s != (v = (++v % n)));
 }
 
 template<typename Tv, typename Te>
-void Graph<Tv, Te>::dijkstra(int)//最短路径Dijkstra算法
+void Graph<Tv, Te>::dijkstra(int s)//最短路径Dijkstra算法
 {
-
+	reset(); int v = s;
+	do
+	{
+		if (status(v) == UNDISCOVERED)//从“未发现”的顶点转入
+		{
+			PFS(v, DijkstraPU<Tv, Te>);
+		}
+	} while (s != (v = (++v % n)));
 }
 
 template<typename Tv, typename Te>
