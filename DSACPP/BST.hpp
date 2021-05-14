@@ -12,11 +12,14 @@ public:
 	//动态删除
 	virtual bool remove(const T &e);
 protected:
-	BinNodePosi(T) _hot;//命中节点的父亲
-	BinNodePosi(T) connect34(//按照“3+4”结构，联结三个节点和四颗子树
-		BinNodePosi(T), BinNodePosi(T), BinNodePosi(T), 
-		BinNodePosi(T), BinNodePosi(T), BinNodePosi(T), BinNodePosi(T));
-	BinNodePosi(T) rotateAt(BinNodePosi(T) x);//对x及其父亲，祖父作统一旋转调整
+	//命中节点的父亲
+	BinNodePosi(T) _hot;
+	//按照“3+4”结构，联结三个节点和四颗子树
+	BinNodePosi(T) connect34(
+		BinNodePosi(T) a,  BinNodePosi(T) b,  BinNodePosi(T) c, 
+		BinNodePosi(T) T0, BinNodePosi(T) T1, BinNodePosi(T) T2, BinNodePosi(T) T3);
+	//对v及其父亲，祖父作统一旋转调整
+	BinNodePosi(T) rotateAt(BinNodePosi(T) v);
 private:
 	//在以v为根节点的BST中寻找关键码e
 	static BinNodePosi(T) searchIn(BinNodePosi(T) &v, const T &e, BinNodePosi(T) &hot);
@@ -48,15 +51,48 @@ virtual bool BST<T>::remove(const T &e)	 //动态删除
 
 template<typename T>
 BinNodePosi(T) BST<T>::connect34(//按照“3+4”结构，联结三个节点和四颗子树
-	BinNodePosi(T), BinNodePosi(T), BinNodePosi(T),
-	BinNodePosi(T), BinNodePosi(T), BinNodePosi(T), BinNodePosi(T))
+	BinNodePosi(T) a,  BinNodePosi(T) b,  BinNodePosi(T) c,
+	BinNodePosi(T) T0, BinNodePosi(T) T1, BinNodePosi(T) T2, BinNodePosi(T) T3)
 {
-
+	a->lChild = T0; if (T0) T0->parent = a;
+	a->rChild = T1; if (T1) T1->parent = a; updateHeight(a);
+	c->lChild = T2; if (T2) T2->parent = c;
+	c->rChild = T3; if (T3) T3->parent = c; updateHeight(c);
+	b->lChild = a;  a->parent = b;
+	b->rChild = c;  c->parent = b; updateHeight(b);
+	return b;//返回根节点
 }
 template<typename T>
-BinNodePosi(T) BST<T>::rotateAt(BinNodePosi(T) x)//对x及其父亲，祖父作统一旋转调整
+BinNodePosi(T) BST<T>::rotateAt(BinNodePosi(T) v)//对v及其父亲，祖父作统一旋转调整
 {
-
+	BinNodePosi(T) p = v->parent;
+	BinNodePosi(T) g = p->parent;//v,p,g
+	if (IsLChild(*p))//p,g   zig
+	{
+		if (IsLChild(*v))//v,p,g   zig-zig
+		{
+			p->parent = g->parent;
+			return connect34(v, p, g, v->lChild, v->rChild, p->rChild, g->rChild);
+		}
+		else//p,v,g   zig-zag
+		{
+			v->parent = g->parent;
+			return connect34(p, v, g, p->lChild, v->lChild, v->rChild, g->rChild);
+		}
+	}
+	else//g,p   zag
+	{
+		if (IsLChild(*v))//g,v,p   zag-zig
+		{
+			v->parent = g->parent;
+			return connect34(g, v, p, g->lChild, v->lChild, v->rChild, p->rChild);
+		}
+		else//g,p,v   zag-zag
+		{
+			p->parent = g->parent;
+			return connect34(g, p, v, g->lChild, p->lChild, v->lChild, v->rChild);
+		}
+	}
 }
 
 //在以v为根节点的BST中寻找关键码e
