@@ -66,7 +66,7 @@ bool AVL<T>::remove(const T &e)
 			if (hei = g->height)//若子树高度并未因为复衡变化，则历代祖先也必定不会失衡
 				break;
 		}
-		updateHeight(g);//历代祖先高度可能发生变化（即便未失衡，也可能高度降低）
+		updateHeight(g);//g高度可能发生变化（即便未失衡，也可能高度降低）
 	}//for,可能需要做O(logn)次调整
 	return true;//成功删除
 }

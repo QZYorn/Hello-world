@@ -14,11 +14,17 @@ public:
 protected:
 	//命中节点的父亲
 	BinNodePosi(T) _hot;
-	//按照“3+4”结构，联结三个节点和四颗子树
+	/*
+	* 按照“3+4”结构，联结三个节点和四颗子树按照“3 + 4”结构联接3个节点及其四棵子树，返回重组之后的局部子树根节点位置（即b）
+	* 子树根节点与上层节点之间的双向联接，均须由上层调用者完成
+	* 可用于AVL和RedBlack的局部平衡调整*/
 	BinNodePosi(T) connect34(
 		BinNodePosi(T) a,  BinNodePosi(T) b,  BinNodePosi(T) c, 
 		BinNodePosi(T) T0, BinNodePosi(T) T1, BinNodePosi(T) T2, BinNodePosi(T) T3);
-	//对v及其父亲，祖父作统一旋转调整
+	/*
+	* 对v及其父亲，祖父作统一旋转调整
+	* BST节点旋转变换统一算法（3节点 + 4子树），返回调整之后局部子树根节点的位置
+	* 注意：尽管子树根会正确指向上层节点（如果存在），但反向的联接须由上层函数完成*/
 	BinNodePosi(T) rotateAt(BinNodePosi(T) v);
 private:
 	//在以v为根节点的BST中寻找关键码e

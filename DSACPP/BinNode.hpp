@@ -27,7 +27,7 @@ using namespace std;
 	(IsLChild(*((p)->parent)) ? (p)->parent->parent->RChild : (p)->parent->parent->LChild)
 /*来自父亲的引用，接收节点*/
 #define FromParentTo(x)\
-	(IsRoot(x) ? _root : (IsLChild(x) ? (x)parent->LChild : (x)parent->RChild))
+	(IsRoot(x) ? _root : (IsLChild(x) ? (x).parent->LChild : (x).parent->RChild))
 //*******************************************************************************************
 
 template<class T>
