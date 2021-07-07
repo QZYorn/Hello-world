@@ -3,7 +3,12 @@
 #include<time.h>
 #include"Stack.hpp"
 #include"Queue.hpp"
+//节点位置
 #define BinNodePosi(T) BinNode<T>* 
+//高度，接收节点指针
+#define stature(p) ((p) ? (p)->height : -1)
+//节点颜色
+typedef enum { RB_RED, RB_BLACK } RBColor; 
 using namespace std;
 
 //*******************************************************************************************
@@ -41,13 +46,16 @@ public:
 	T data;//数据域
 	int height;//高度
 	int size();//子树规模
+	int npl; //Null Path Length（左式堆，也可直接用height代替）
+	RBColor color; //颜色（红黑树）
+
 	static default_random_engine e;//随机数引擎
 	static uniform_int_distribution<unsigned> u5;//[0,4]取值范围
 
-	BinNode() :parent(nullptr), lChild(nullptr), rChild(nullptr), height(0){}
+	BinNode() :parent(nullptr), lChild(nullptr), rChild(nullptr), height(0), npl(1), color(RB_RED){}
 	BinNode(T const &e, BinNodePosi(T) par) :BinNode(e, par) {}
-	BinNode(T const &e, BinNodePosi(T) par = nullptr, BinNodePosi(T) lc = nullptr, BinNodePosi(T) rc = nullptr, int hei = 0)
-		:data(e), parent(par), lChild(lc), rChild(rc), height(hei){}
+	BinNode(T const &e, BinNodePosi(T) par = nullptr, BinNodePosi(T) lc = nullptr, BinNodePosi(T) rc = nullptr, int hei = 0, int l = 0, RBColor c = RB_RED)
+		:data(e), parent(par), lChild(lc), rChild(rc), height(hei), npl(l), color(c) {}
 
 	
 

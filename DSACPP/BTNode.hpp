@@ -13,8 +13,7 @@ struct BTNode//B树节点模板类
 	Vector<T> key;
 	//孩子向量
 	Vector<BTNodePosi(T)> child;//其长度总比key多1
-
-	//构造函数(BTNode只能作为跟接待你创建，并且初始时只有0个关键码和1个空孩子)
+	//构造函数(BTNode只能作为根节点创建，并且初始时只有0个关键码和1个空孩子)
 	BTNode(){ parent = nullptr; child.insert(0, nullptr); }
 	BTNode(T e, BTNodePosi(T) lc = nullptr, BTNodePosi(T) rc = nullptr)
 	{

@@ -88,7 +88,7 @@ public:
 	T& get(Rank i);
 
 	//重载[]运算符
-	T& operator[](Rank r);
+	T& operator[](Rank r) const;
 
 	//返回向量大小
 	Rank size() const;
@@ -500,7 +500,7 @@ T& Vector<T>::get(Rank i)
 
 //重载[]运算符
 template<class T>
-T& Vector<T>::operator[](Rank r)
+T& Vector<T>::operator[](Rank r) const
 {
 	assert(r >= 0 && r <= _size);
 	return _elem[r];

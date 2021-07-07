@@ -5,8 +5,7 @@
 #include"release.h"
 using namespace std;
 
-//高度，接收节点指针
-#define stature(p) ((p) ? (p)->height : -1)
+
 
 template<class T>
 class BinTree
