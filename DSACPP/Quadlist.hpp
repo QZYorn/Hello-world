@@ -34,7 +34,8 @@ public:
 	bool valid(QuadlistNodePosi(T) p){ return p && (trailer != p) && (header != p); }
 
 	//可写访问接口
-	T remove(QlistNodePosi(T) p);//删除（合法）位置p处的节点，返回被删除节点的数值
+	//删除（合法）位置p处的节点，返回被删除节点的数值
+	T remove(QlistNodePosi(T) p);
 	//将*e作为p的后继、b的上邻插入
 	QlistNodePosi(T) insertAfterAbove(T const& e, QlistNodePosi(T) p, QlistNodePosi(T) b = nullptr);
 
@@ -45,9 +46,9 @@ public:
 	template<typename VST> void traverse(VST&);
 };//Quadlist
 
-template<typename T>
-void Quadlist<T>::init()
-{//Quadlist初始化，创建Quadlist对象时统一调用
+//Quadlist初始化，创建Quadlist对象时统一调用
+template<typename T> void Quadlist<T>::init()
+{
 	header  = new QuadlistNode<T>;//创建头哨兵节点
 	trailer = new QuadlistNode<T>;//创建尾哨兵节点
 	header->pred = nullptr; header->succ = trailer; //沿横向联接哨兵
@@ -56,3 +57,28 @@ void Quadlist<T>::init()
 	header->below = trailer->below = nullptr;//纵向的前驱置空
 	_size = 0;//记录规模
 }//如此构造的四联表，不含任何实质的节点，且暂时与其它四联表相互独立
+
+//清除所有节点
+template<typename T> int Quadlist<T>::clear()
+{
+	int oldSize = _size;//备份大小
+	while (0 < _size)//逐个删除所有节点
+		remove(header->succ);
+	return oldSize;
+}
+
+//可写访问接口
+//删除（合法）位置p处的节点，返回被删除节点的数值
+template<typename T> T Quadlist<T>::remove(QlistNodePosi(T) p)
+{//assert:p为Quadlist中的合法位置
+	p->pred->succ = p->succ; p->succ->pred = p->pred; //摘除节点
+	--_size;
+	T e = p->entry; delete p;//备份词条，释放节点
+	return e;//返回词条
+}
+//将*e作为p的后继、b的上邻插入
+template<typename T> QlistNodePosi(T) Quadlist<T>::insertAfterAbove(T const& e, QlistNodePosi(T) p, QlistNodePosi(T) b = nullptr)
+{
+	++_size;
+	return p->insertAsSuccAbove(e, b);//返回新节点位置（below = nullptr）
+}
