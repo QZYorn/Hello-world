@@ -13,8 +13,8 @@
 或者作为黑节点，黑高度不等于孩子的黑高度加一。
 */
 #define BlackHeightUpdated(x) (\
-	(stature((x).lChild) == stature((x).rChild)) && \
-	((x).height == (IsRed(&x) ? stature((x).lChild) : stature((x).lChild) + 1))\
+	(stature((x).lc) == stature((x).rc)) && \
+	((x).height == (IsRed(&x) ? stature((x).lc) : stature((x).lc) + 1))\
 )
 
 template<typename T>
@@ -42,7 +42,7 @@ public:
 //更新节点x的高度
 template<typename T>int RedBlack<T>::updateHeight(BinNodePosi(T) x)
 {
-	x->height = max(stature(x->lChild), stature(x->rChild));//孩子黑高度一般相等，除非遇到双黑
+	x->height = max(stature(x->lc), stature(x->rc));//孩子黑高度一般相等，除非遇到双黑
 	return IsBlack(x) ? x->height++ : x->height;//若当前节点为黑，则计入黑高度
 }//因统一定义stature(NULL) = -1，故height比黑高度少一，好在不致影响到各种算法中的比较
 
@@ -75,7 +75,7 @@ template<typename T> void RedBlack<T>::solveDoubleRed(BinNodePosi(T) x)//当前x必
 
 		//再染色
 		r->color = RB_BLACK;//根置黑
-		r->lChild = r->rChild = RB_RED;//孩子置红
+		r->lc = r->rc = RB_RED;//孩子置红
 	}
 	else//若u为红色
 	{
@@ -103,19 +103,19 @@ template<typename T> void RedBlack<T>::solveDoubleBlack(BinNodePosi(T) r)
 {
 	BinNodePosi(T) p = r ? r->parent : _hot;//因为r可能为NULL，所以先考察r是否存在，若存在则父亲即为r的父亲，若不存在则父亲即为_hot
 	if (!p) return;//若p不存在，则直接结束，无需调整
-	BinNodePosi(T) s = (r == p->lChild) ? p->rChild : p->lChild;//s为r的兄弟
+	BinNodePosi(T) s = (r == p->lc) ? p->rc : p->lc;//s为r的兄弟
 	if (IsBlack(s))//兄弟s为黑
 	{
 		BinNodePosi(T) t = nullptr;//s的红孩子（若左右皆红，则左优先。若左右皆黑，则为nullptr）
-		if (IsRed(s->rChild)) t = s->rChild;//右子
-		if (IsRed(s->lChild)) t = s->lChild;//左子
+		if (IsRed(s->rc)) t = s->rc;//右子
+		if (IsRed(s->lc)) t = s->lc;//左子
 		if (t)//黑s有红孩子：BB-1
 		{
 			RBColor oldColor = p->color;//备份原子树根节点p的颜色
 			BinNodePosi(T) b = FromParentTo(*p) = rotateAt(t);//对t及其父亲、祖父，作统一旋转变换（3+4重构）
 			//作重染色,孩子重染色为黑，并更新黑高度
-			if (HasLChild(*b)){ b->lChild->color = RB_BLACK; updateHeight(b->lChild); }
-			if (HasRChild(*b)){ b->rChild->color = RB_BLACK; updateHeight(b->rChild); }
+			if (HasLChild(*b)){ b->lc->color = RB_BLACK; updateHeight(b->lc); }
+			if (HasRChild(*b)){ b->rc->color = RB_BLACK; updateHeight(b->rc); }
 			b->color = oldColor; updateHeight(b);//新根节点继承原根节点颜色，更新黑高度
 		}
 		else//黑s无红孩子
@@ -137,7 +137,7 @@ template<typename T> void RedBlack<T>::solveDoubleBlack(BinNodePosi(T) r)
 	{//此时，红s的父亲p必为黑
 		s->color = RB_BLACK;//s转黑
 		p->color = RB_RED;//p转红
-		BinNodePosi(T) t = IsLChild(*s) ? s->lChild : s->rChild;//取t与其父同侧
+		BinNodePosi(T) t = IsLChild(*s) ? s->lc : s->rc;//取t与其父同侧
 		_hot = p; FromParentTo(*p) = rotateAt(t);//对t及其父亲、祖父，作平衡旋转调整
 		solveDoubleBlack(r);//继续修正r处双黑——此时的p已转红，故后续只能是BB-1或BB-2R
 	}

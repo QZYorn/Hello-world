@@ -62,9 +62,10 @@ template<typename K, typename V>  bool Skiplist<K, V>::skipSearch(
 	}
 }
 
-template<typename K,typename V> 
-bool Skiplist<K, V>::put(K k, V v)
-{//跳转表词条插入算法
+
+//跳转表词条插入算法
+template<typename K,typename V>  bool Skiplist<K, V>::put(K k, V v)
+{
 	Entry<K, V> e = Entry<K, V>(k, v);//待插入的词条（将被随机地插入多个副本）
 	if (empty()) insertAsFirst(new Quadlist<Entry<K, V>>);//插入首个Entry
 	ListNode<Quadlist<Entry<K, V>>*>* qlist = first();//从顶层四联表的
@@ -92,9 +93,8 @@ bool Skiplist<K, V>::put(K k, V v)
 	return true;//Dictionary允许重复元素，故插入必成功——这与Hashtable等Map略有差异
 }
 
-
-template<typename K, typename V>
-bool Skiplist<K, V>::remove(K k)//跳转表词条删除算法
+//跳转表词条删除算法
+template<typename K, typename V> bool Skiplist<K, V>::remove(K k)
 {
 	if (empty())//空表情况，直接返回 失败
 		return false;

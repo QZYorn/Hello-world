@@ -75,7 +75,7 @@ public:
 template<class T>
 int BinTree<T>::updateHeight(BinNodePosi(T) x)
 {
-	return x->height = 1 + max(stature(x->lChild), stature(x->rChild));
+	return x->height = 1 + max(stature(x->lc), stature(x->rc));
 }//O(depth(x) + 1)时间复杂度为x的深度 + 1（取较大值、加和、赋值操作）
 
 template<class T>
@@ -94,40 +94,36 @@ void BinTree<T>::updateHeightAbove(BinNodePosi(T) x)
 
 //子树插入函数
 //e作为根节点插入空树
-template<class T>
-BinNodePosi(T) BinTree<T>::insertAsRoot(T const &e)
+template<class T> BinNodePosi(T) BinTree<T>::insertAsRoot(T const &e)
 {
 	_size = 1;
 	return _root = new BinNode<T>(e);
 }
 //e插入作为x的左儿子
-template<class T>
-BinNodePosi(T) BinTree<T>::insertAsLC(BinNodePosi(T) x, T const &e)
+template<class T> BinNodePosi(T) BinTree<T>::insertAsLC(BinNodePosi(T) x, T const &e)
 {
 	++_size;//规模增加
 	x->insertAsLC(e);//e作为x左儿子插入
 	updateHeightAbove(x);//更新x及其历代祖先高度
-	return x->lChild;//返回被插入的节点位置
+	return x->lc;//返回被插入的节点位置
 }
 //e插入作为x的右儿子
-template<class T>
-BinNodePosi(T) BinTree<T>::insertAsRC(BinNodePosi(T) x, T const &e)
+template<class T> BinNodePosi(T) BinTree<T>::insertAsRC(BinNodePosi(T) x, T const &e)
 {
 	++_size;
 	x->insertAsRC(e);
 	updateHeightAbove(x);
-	return x->rChild;
+	return x->rc;
 }
 
 //子树接入函数
 //t树作为x左子树接入,返回插入节点位置
-template<class T>
-BinNodePosi(T) BinTree<T>::attachAsLC(BinNodePosi(T) x, BinTree<T>* &Tr)
+template<class T> BinNodePosi(T) BinTree<T>::attachAsLC(BinNodePosi(T) x, BinTree<T>* &Tr)
 {
-	assert(x->lChild == nullptr);
+	assert(x->lc == nullptr);
 	//接入子树
-	if (x->lChild = Tr->root())//若Tr树根节点不为空，Tr树根节点作为x节点左孩子
-		x->lChild->parent = x;//Tr树根节点的父亲为x节点
+	if (x->lc = Tr->root())//若Tr树根节点不为空，Tr树根节点作为x节点左孩子
+		x->lc->parent = x;//Tr树根节点的父亲为x节点
 
 	_size += Tr->size(); //规模增加
 	updateHeightAbove(x);//更新x节点及其祖先节点高度
@@ -142,13 +138,12 @@ BinNodePosi(T) BinTree<T>::attachAsLC(BinNodePosi(T) x, BinTree<T>* &Tr)
 }
 
 //t树作为x右子树接入,返回插入节点位置
-template<class T>
-BinNodePosi(T) BinTree<T>::attachAsRC(BinNodePosi(T) x, BinTree<T>* &Tr)
+template<class T> BinNodePosi(T) BinTree<T>::attachAsRC(BinNodePosi(T) x, BinTree<T>* &Tr)
 {
-	assert(x->rChild == nullptr);
+	assert(x->rc == nullptr);
 	//接入子树
-	if (x->rChild = Tr->root())//若Tr树根节点不为空，Tr树根节点作为x节点右孩子
-		x->rChild->parent = x;//Tr树根节点的父亲为x节点
+	if (x->rc = Tr->root())//若Tr树根节点不为空，Tr树根节点作为x节点右孩子
+		x->rc->parent = x;//Tr树根节点的父亲为x节点
 
 	_size += Tr->size(); //规模增加
 	updateHeightAbove(x);//更新x节点及其祖先节点高度
@@ -163,8 +158,7 @@ BinNodePosi(T) BinTree<T>::attachAsRC(BinNodePosi(T) x, BinTree<T>* &Tr)
 }
 
 //子树删除函数
-template<class T>
-int BinTree<T>::remove(BinNodePosi(T) x)
+template<class T> int BinTree<T>::remove(BinNodePosi(T) x)
 {
 	FromParentTo(*x) = nullptr;//切断来自父亲的指针
 	updateHeightAbove(x->parent);//更新祖先高度
@@ -177,7 +171,7 @@ static int BinTree<T>::removeAt(BinNodePosi(T) x)
 {
 	if (!x)//递归基，空树，叶节点
 		return 0;
-	int n = 1 + removeAt(x->lChild) + removeAt(x->rChild);//递归释放左右子树
+	int n = 1 + removeAt(x->lc) + removeAt(x->rc);//递归释放左右子树
 	//释放被摘除节点
 	release(x->data);
 	release(x);
@@ -188,8 +182,7 @@ static int BinTree<T>::removeAt(BinNodePosi(T) x)
 
 
 //子树分离函数
- template<class T>
- BinTree<T>* BinTree<T>::secede(BinNodePosi(T) x)//将子树x从当前树中摘除，并封装成新树返回
+ template<class T> BinTree<T>* BinTree<T>::secede(BinNodePosi(T) x)//将子树x从当前树中摘除，并封装成新树返回
  {
 	 FromParentTo(*x) = nullptr;     //切断来自父亲的指针
 	 updateHeightAbove(x->parent);   //更新祖先高度

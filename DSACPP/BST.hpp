@@ -60,12 +60,12 @@ BinNodePosi(T) BST<T>::connect34(//按照“3+4”结构，联结三个节点和四颗子树
 	BinNodePosi(T) a,  BinNodePosi(T) b,  BinNodePosi(T) c,
 	BinNodePosi(T) T0, BinNodePosi(T) T1, BinNodePosi(T) T2, BinNodePosi(T) T3)
 {
-	a->lChild = T0; if (T0) T0->parent = a;
-	a->rChild = T1; if (T1) T1->parent = a; updateHeight(a);
-	c->lChild = T2; if (T2) T2->parent = c;
-	c->rChild = T3; if (T3) T3->parent = c; updateHeight(c);
-	b->lChild = a;  a->parent = b;
-	b->rChild = c;  c->parent = b; updateHeight(b);
+	a->lc = T0; if (T0) T0->parent = a;
+	a->rc = T1; if (T1) T1->parent = a; updateHeight(a);
+	c->lc = T2; if (T2) T2->parent = c;
+	c->rc = T3; if (T3) T3->parent = c; updateHeight(c);
+	b->lc = a;  a->parent = b;
+	b->rc = c;  c->parent = b; updateHeight(b);
 	return b;//返回根节点
 }
 template<typename T>
@@ -78,12 +78,12 @@ BinNodePosi(T) BST<T>::rotateAt(BinNodePosi(T) v)//对v及其父亲，祖父作统一旋转调
 		if (IsLChild(*v))//v,p,g   zig-zig
 		{
 			p->parent = g->parent;
-			return connect34(v, p, g, v->lChild, v->rChild, p->rChild, g->rChild);
+			return connect34(v, p, g, v->lc, v->rc, p->rc, g->rc);
 		}
 		else//p,v,g   zig-zag
 		{
 			v->parent = g->parent;
-			return connect34(p, v, g, p->lChild, v->lChild, v->rChild, g->rChild);
+			return connect34(p, v, g, p->lc, v->lc, v->rc, g->rc);
 		}
 	}
 	else//g,p   zag
@@ -91,12 +91,12 @@ BinNodePosi(T) BST<T>::rotateAt(BinNodePosi(T) v)//对v及其父亲，祖父作统一旋转调
 		if (IsLChild(*v))//g,v,p   zag-zig
 		{
 			v->parent = g->parent;
-			return connect34(g, v, p, g->lChild, v->lChild, v->rChild, p->rChild);
+			return connect34(g, v, p, g->lc, v->lc, v->rc, p->rc);
 		}
 		else//g,p,v   zag-zag
 		{
 			p->parent = g->parent;
-			return connect34(g, p, v, g->lChild, p->lChild, v->lChild, v->rChild);
+			return connect34(g, p, v, g->lc, p->lc, v->lc, v->rc);
 		}
 	}
 }
@@ -108,7 +108,7 @@ BinNodePosi(T) BST<T>::searchIn(BinNodePosi(T) &v, const T &e, BinNodePosi(T) &h
 	if (!v || v->data == e)//递归基，在命中节点或者假想的通配节点返回
 		return v;
 	hot = v;//一般情况下，先记下当前(非空)节点，再
-	return searchIn((v->data < e ? v->rChild : v->lChild), e, hot);//深入一层，递归查找
+	return searchIn((v->data < e ? v->rc : v->lc), e, hot);//深入一层，递归查找
 }//返回值指向命中节点或假想的通配节点，hot指向其父亲，退化情况为nullptr
 
 //删除位置x的节点
@@ -118,16 +118,16 @@ BinNodePosi(T) BST<T>::removeAt(BinNodePosi(T) &x, BinNodePosi(T) &hot)
 	BinNodePosi(T) w = x;//实际被删除节点
 	BinNodePosi(T) succ = nullptr;//被删除节点的后继(接替者)
 	if (!HasLChild(*x))		//被删除节点的左子树为空
-		succ = x = x->rChild;	//被删节点原位置继承为单子树根节点
+		succ = x = x->rc;	//被删节点原位置继承为单子树根节点
 	else if (!HasRChild(*x))//被删除节点的右子树为空
-		succ = x = x->lChild;
+		succ = x = x->lc;
 	else//左右子树皆存在
 	{
 		w = w->succ();		   //实际删除节点 转为 被删除节点的后继节点
 		swap(x->data, w->data);//把后继数据转移至它应呆的位置，即被删除节点处
 		BinNodePosi(T) u = w->parent;//记录实际删除节点的父节点
 		//把w实际被删除节点隔离了，
-		((u == x) ? u->rChild : u->lChild) = succ = w->rChild;
+		((u == x) ? u->rc : u->lc) = succ = w->rc;
 	}
 	hot = w->parent;
 	if (succ)//若存在后继(接替者)

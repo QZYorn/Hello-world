@@ -49,6 +49,9 @@ public:
 	Posi(T) first() const;
 	//末节点位置
 	Posi(T) last() const;
+	//判断位置p是否对外合法
+	bool valid(Posi(T) p)
+	{ return p && (trailer != p) && (header != p); }//将头、尾节点等同于nullptr}
 	//区间列表 无序查找,在节点p的n个真前驱中查找e,查找成功返回节点地址，失败返回NULL
 	Posi(T) find(T const& e, int n, Posi(T) p);
 	//整体列表 无序查找,查找成功返回节点地址，失败返回NULL
@@ -328,8 +331,7 @@ T List<T>::remove(Posi(T) p)
 }
 
 //无序列表 唯一化,返回删除重复元素个数
-template<class T>
-int List<T>::deduplicate()
+template<class T> int List<T>::deduplicate()
 {
 	if (_size < 2)
 	{

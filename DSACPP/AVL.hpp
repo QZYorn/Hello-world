@@ -2,19 +2,19 @@
 #include"BST.hpp"
 //理想平衡
 #define Balanced(x)\
-	(stature((x).lChild) == stature((x).rChild))
+	(stature((x).lc) == stature((x).rc))
 //平衡因子
 #define BalFac(x)\
-	(stature((x).lChild) - stature((x).rChild))
+	(stature((x).lc) - stature((x).rc))
 //AVL平衡条件
 #define AVLBalanced(x)\
 	((-2 < BalFac(x)) && (BalFac(x) < 2))
 
 //左右孩子中选择最高者，接收节点指针
 #define tallerChild(x) (\
-	stature((x)->lChild) > stature((x)->rChild) ? (x)->lChild :(/*左高*/\
-	stature((x)->lChild) > stature((x)->rChild) ? (x)->lChild :(/*右高*/\
-	IsLChild(*(x)) ? (x)->lChild : (x)->rChild/*等高，则选择和父亲x同侧的孩子*/\
+	stature((x)->lc) > stature((x)->rc) ? (x)->lc :(/*左高*/\
+	stature((x)->lc) > stature((x)->rc) ? (x)->lc :(/*右高*/\
+	IsLChild(*(x)) ? (x)->lc : (x)->rc/*等高，则选择和父亲x同侧的孩子*/\
 	)\
 	)\
 )

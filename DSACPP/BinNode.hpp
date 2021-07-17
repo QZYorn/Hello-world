@@ -14,11 +14,11 @@ using namespace std;
 //*******************************************************************************************
 //BinNode×´Ì¬ÓëĞÔÖÊÅĞ¶Ï
 #define IsRoot(x) (!((x).parent))//ÊÇ·ñ¸ù½Úµã
-#define IsLChild(x) (!IsRoot(x) && (&(x) == (x).parent->LChild))//ÊÇ·ñ×ó¶ù×Ó
-#define IsRChild(x) (!IsRoot(x) && (&(x) == (x).parent->RChild))//ÊÇ·ñÓÒ¶ù×Ó
+#define IsLChild(x) (!IsRoot(x) && (&(x) == (x).parent->lc))//ÊÇ·ñ×ó¶ù×Ó
+#define IsRChild(x) (!IsRoot(x) && (&(x) == (x).parent->rc))//ÊÇ·ñÓÒ¶ù×Ó
 #define HasParent(x) (!IsRoot(x))//ÓĞÃ»ÓĞ¸¸Ç×
-#define HasLChild(x) ((x).LChild)//ÓĞÃ»ÓĞ×ó¶ù×Ó
-#define HasRChild(x) ((x).RChild)//ÓĞÃ»ÓĞÓÒ¶ù×Ó
+#define HasLChild(x) ((x).lc)//ÓĞÃ»ÓĞ×ó¶ù×Ó
+#define HasRChild(x) ((x).rc)//ÓĞÃ»ÓĞÓÒ¶ù×Ó
 #define HasChild(x) (HasLChild(x) || HasRChild(x))//ÓĞÃ»ÓĞ¶ù×Ó
 #define HasBothChild(x) (HasLChild(x) && HasRChild(x))//ÓĞÃ»ÓĞÁ½¸ö¶ù×Ó
 #define IsLeaf(x) (!HasChild(x))//ÊÇ²»ÊÇÒ¶½Úµã
@@ -26,22 +26,23 @@ using namespace std;
 //ÓëBinNode¾ßÓĞÌØ¶¨¹ØÏµµÄ½Úµã»òÖ¸Õë
 /*ĞÖµÜ£¬½ÓÊÕ½ÚµãÖ¸Õë*/
 #define sibling(p)\
-	(IsLChild(*(p)) ? (p)->parent->RChild : (p)->parent-LChild)
+	(IsLChild(*(p)) ? (p)->parent->rc : (p)->parent-lc)
 /*ÊåÊå£¬½ÓÊÕ½ÚµãÖ¸Õë*/
 #define uncle(p)\
-	(IsLChild(*((p)->parent)) ? (p)->parent->parent->RChild : (p)->parent->parent->LChild)
+	(IsLChild(*((p)->parent)) ? (p)->parent->parent->rc : (p)->parent->parent->lc)
 /*À´×Ô¸¸Ç×µÄÒıÓÃ£¬½ÓÊÕ½Úµã*/
 #define FromParentTo(x)\
-	(IsRoot(x) ? _root : (IsLChild(x) ? (x).parent->LChild : (x).parent->RChild))
+	(IsRoot(x) ? _root : (IsLChild(x) ? (x).parent->lc : (x).parent->rc))
 //*******************************************************************************************
 
 template<class T>
 struct BinNode
 {
 public:
+
 	BinNodePosi(T) parent;//¸¸Ç×
-	BinNodePosi(T)lChild;//×ó¶ù×Ó
-	BinNodePosi(T)rChild;//ÓÒ¶ù×Ó
+	BinNodePosi(T)lc;//×ó¶ù×Ó
+	BinNodePosi(T)rc;//ÓÒ¶ù×Ó
 
 	T data;//Êı¾İÓò
 	int height;//¸ß¶È
@@ -52,10 +53,10 @@ public:
 	static default_random_engine e;//Ëæ»úÊıÒıÇæ
 	static uniform_int_distribution<unsigned> u5;//[0,4]È¡Öµ·¶Î§
 
-	BinNode() :parent(nullptr), lChild(nullptr), rChild(nullptr), height(0), npl(1), color(RB_RED){}
+	BinNode() :parent(nullptr), lc(nullptr), rc(nullptr), height(0), npl(1), color(RB_RED){}
 	BinNode(T const &e, BinNodePosi(T) par) :BinNode(e, par) {}
 	BinNode(T const &e, BinNodePosi(T) par = nullptr, BinNodePosi(T) lc = nullptr, BinNodePosi(T) rc = nullptr, int hei = 0, int l = 0, RBColor c = RB_RED)
-		:data(e), parent(par), lChild(lc), rChild(rc), height(hei), npl(l), color(c) {}
+		:data(e), parent(par), lc(lc), rc(rc), height(hei), npl(l), color(c) {}
 
 	
 
@@ -97,25 +98,25 @@ template<class T>
 int BinNode<T>::size()
 {
 	int s = 1;
-	if (lChild != nullptr)
-		s += lChild->size();
-	if (rChild != nullptr)
-		s += rChild->size();
+	if (lc != nullptr)
+		s += lc->size();
+	if (rc != nullptr)
+		s += rc->size();
 	return s;
 }
 
 template<class T>
 BinNodePosi(T) BinNode<T>::insertAsLC(T const &e)
 {
-	lChild = new BinNode<T>(e, this);
-	return lChild;
+	lc = new BinNode<T>(e, this);
+	return lc;
 }
 
 template<class T>
 BinNodePosi(T) BinNode<T>::insertAsRC(T const &e)
 {
-	rChild = new BinNode<T>(e, this);
-	return rChild;
+	rc = new BinNode<T>(e, this);
+	return rc;
 }
 
 template<class T>
@@ -128,10 +129,10 @@ BinNodePosi(T) BinNode<T>::succ()//£¨ÖĞĞòÏÂ£©µ±Ç°½ÚµãÖ±½Óºó¼Ì
 	//1.ÎªÆä ÓÒ×ÓÊ÷µÄ×î×ó ×îµÍº¢×Ó
 	if (HasRChild(*t))//ÓĞÓÒº¢×Ó
 	{
-		t = t->rChild;//½øÈëÓÒ×ÓÊ÷Ñ°ÕÒ
+		t = t->rc;//½øÈëÓÒ×ÓÊ÷Ñ°ÕÒ
 		while (HasLChild(*t))//ÑØ×Å×ó·ÖÖ§²»¶ÏÉîÈë
 		{
-			t = t->lChild;
+			t = t->lc;
 		}
 	}
 		
@@ -158,8 +159,8 @@ template<class VST> void BinNode<T>::travLeveL(VST &visit)//×ÓÊ÷²ã´Î±éÀú
 	{
 		BinNodePosi(T) t = Q.dequeue();//È¡³ö¶ÓÊ×½Úµã
 		visit(t->data); //²¢·ÃÎÊ
-		if (HasLChild)Q.enqueue(t->lChild);//ÈôÓĞ×óº¢×Ó£¬ÔòÈë¶Ó
-		if (HasRChild)Q.enqueue(t->rChild);//ÈôÓĞÓÒº¢×Ó£¬ÔòÈë¶Ó
+		if (HasLChild)Q.enqueue(t->lc);//ÈôÓĞ×óº¢×Ó£¬ÔòÈë¶Ó
+		if (HasRChild)Q.enqueue(t->rc);//ÈôÓĞÓÒº¢×Ó£¬ÔòÈë¶Ó
 	}
 }
 
@@ -170,7 +171,7 @@ template<class VST> void BinNode<T>::travPre(VST &visit)  //×ÓÊ÷ÏÈĞò±éÀú
 	int random = u5(e);
 	switch (random)
 	{
-	case 0: travPre_1(this,visit); break;//µü´ú°æ±¾#1
+	case 0: travPre_1(this,visit); break; //µü´ú°æ±¾#1
 	case 1: travPre_2(this, visit); break;//µü´ú°æ±¾#2
 	default:travPre_R(this, visit); break;//µİ¹é°æ±¾
 	}
@@ -184,8 +185,8 @@ template<class VST> void BinNode<T>::travPre_1(BinNodePosi(T) t,VST &visit)//×ÓÊ
 	{
 		t = s.pop();
 		visit(t->data);
-		if (HasRChild(*t))s.push(t->rChild);//ÏÈ°ÑÓÒ¶ù×ÓÈëÕ»£¬ÏÈ½øºó³ö
-		if (HasLChild(*t))s.push(t->lChild);//ÔÙ°Ñ×ó¶ù×ÓÈëÕ»£¬ºó½øÏÈ³ö
+		if (HasRChild(*t))s.push(t->rc);//ÏÈ°ÑÓÒ¶ù×ÓÈëÕ»£¬ÏÈ½øºó³ö
+		if (HasLChild(*t))s.push(t->lc);//ÔÙ°Ñ×ó¶ù×ÓÈëÕ»£¬ºó½øÏÈ³ö
 	}
 }
 template<class T>
@@ -207,8 +208,8 @@ template<class VST> void BinNode<T>::travPre_R(BinNodePosi(T) t, VST &visit)//×Ó
 {
 	if (!t)return;//µİ¹é»ù
 	visit(t->data);//·ÃÎÊµ±Ç°Êı¾İÓò
-	travPre_R(t->lChild, visit);//µİ¹é·ÃÎÊ×óÊ÷
-	travPre_R(t->rChild, visit);//µİ¹é·ÃÎÊÓÒÊ÷
+	travPre_R(t->lc, visit);//µİ¹é·ÃÎÊ×óÊ÷
+	travPre_R(t->rc, visit);//µİ¹é·ÃÎÊÓÒÊ÷
 }
 
 //ÖĞĞò±éÀú
@@ -234,7 +235,7 @@ template<class VST> void BinNode<T>::travIn_1(BinNodePosi(T) t, VST &visit)   //
 		goAlongLeftBranch(t, s);		//´Óµ±Ç°½Úµã³ö·¢£¬ÑØ×Å×ó²àÁ´ÖğÅúÈëÕ»
 		if (s.empty())break;			//Ö±ÖÁËùÓĞ½Úµã´¦ÀíÍê±Ï
 		t = s.pop(); visit(t->data);	//µ¯³öÕ»¶¥²¢·ÃÎÊ
-		t = t->rChild;					//×ªÏòÓÒ×ÓÊ÷
+		t = t->rc;					//×ªÏòÓÒ×ÓÊ÷
 	}
 }
 template<class T>
@@ -246,12 +247,12 @@ template<class VST> void BinNode<T>::travIn_2(BinNodePosi(T) t, VST &visit)   //
 		if (t)//ÑØ×Å×óÍ¨Â·²»¶ÏÉîÈë
 		{
 			s.push(t);//ÒÀ´ÎÈëÕ»
-			t = t->lChild;
+			t = t->lc;
 		}
 		else if (!s.empty())//Õ»·Ç¿ÕÇÒ×óÍ¨Â·µ½Í·Ê±
 		{
 			t = s.pop(); visit(t->data);//È¡³öÕ»¶¥²¢·ÃÎÊ
-			t = t->rChild;//×ªÈëÓÒ×ÓÊ÷
+			t = t->rc;//×ªÈëÓÒ×ÓÊ÷
 		}
 		else
 			break;
@@ -265,14 +266,14 @@ template<class VST> void BinNode<T>::travIn_3(BinNodePosi(T) t, VST &visit)   //
 	{
 		if (!back && HasLChild(*t))//¸Õ¸ÕÃ»ÓĞ½øĞĞ»ØËİ ÇÒ ÓĞ×ó×ÓÊ÷
 		{
-			t = t->lChild;//ÑØ×Å×óÍ¨Â·²»¶ÏÉîÈë
+			t = t->lc;//ÑØ×Å×óÍ¨Â·²»¶ÏÉîÈë
 		}
 		else//¸Õ¸Õ½øĞĞÁË»ØËİ »òÕß Ã»ÓĞ×ó×ÓÊ÷
 		{
 			visit(t->data);//×ó×ÓÊ÷±éÀú½áÊøºó·ÃÎÊµ±Ç°½ÚµãÊı¾İÓò
 			if (HasRChild(*t))//ÓĞÓÒ×ÓÊ÷
 			{
-				t = t->rChild;//½øÈëÓÒ×ÓÊ÷½øĞĞ±éÀú
+				t = t->rc;//½øÈëÓÒ×ÓÊ÷½øĞĞ±éÀú
 				back = false;//»ØËİ±ê¼ÇÇå³ı
 			}
 			else//Ã»ÓĞÓÒ×ÓÊ÷
@@ -293,9 +294,9 @@ template<class T>
 template<class VST> void BinNode<T>::travIn_R(BinNodePosi(T) t, VST &visit)   //×ÓÊ÷ÖĞĞò±éÀú#µİ¹é°æ±¾
 {
 	if (!t)return;//µİ¹é»ù
-	travIn_R(t->lChild, visit);
+	travIn_R(t->lc, visit);
 	visit(t->data);
-	travIn_R(t->rChild, visit);
+	travIn_R(t->rc, visit);
 }
 
 //ºóĞò±éÀú
@@ -334,8 +335,8 @@ template<class T>
 template<class VST> void BinNode<T>::travPost_R(BinNodePosi(T) t, VST &visit)	  //×ÓÊ÷ºóĞò±éÀú#µİ¹é°æ±¾
 {
 	if (!t)return;//µİ¹é»ù
-	travPost_R(t->lChild, visit);
-	travPost_R(t->rChild, visit);
+	travPost_R(t->lc, visit);
+	travPost_R(t->rc, visit);
 	visit(t->data);
 }
 
@@ -346,8 +347,8 @@ template<class VST> void BinNode<T>::visitAlongLeftBranch//×ó·ÖÖ§ÒÀ´Î±éÀú²¢½«ÓÒº
 	while (t)//µ±Ç°½ÚµãÎª¿ÕÊ±½áÊøÑ­»·
 	{
 		visit(t->data);//·ÃÎÊµ±Ç°½ÚµãÊı¾İÓò
-		if (HasRChild(*t))s.push(t->rChild);//·Ç¿ÕÓÒº¢×ÓÈëÕ»
-		t = t->rChild;//ÑØ×Å×ó·ÖÖ§½øÈëÏÂÒ»²ã
+		if (HasRChild(*t))s.push(t->rc);//·Ç¿ÕÓÒº¢×ÓÈëÕ»
+		t = t->rc;//ÑØ×Å×ó·ÖÖ§½øÈëÏÂÒ»²ã
 	}
 }
 template<class T>
@@ -357,7 +358,7 @@ template<class VST> void BinNode<T>::goAlongLeftBranch   //×ó·ÖÖ§ÒÀ´ÎÈëÕ»£¬Ö±ÖÁÎ
 	while (t)
 	{
 		s.push(t);//µ±Ç°½ÚµãÈëÕ»
-		t = t->lChild;//ÑØ×Å×ó·ÖÖ§½øÈëÏÂÒ»²ã
+		t = t->lc;//ÑØ×Å×ó·ÖÖ§½øÈëÏÂÒ»²ã
 	}
 }
 template<class T>
@@ -367,7 +368,7 @@ static void BinNode<T>::gotoHLVFL(Stack<BinNodePosi(T)> &s)//ÔÚÒÔsÕ»¶¥½ÚµãÎª¸ùµÄ
 	while (HasChild(*t))//ÈôÓĞº¢×Ó
 	{
 		BinNodePosi(T) t = s.top();//×ªÈëÕ»¶¥½Úµã×ÓÊ÷
-		if (HasRChild(*t))s.push(t->rChild);//ÈôÓĞÓÒº¢×ÓÔòÓÅÏÈÈëÕ»
-		if (HasLChild(*t))s.push(t->lChild);//È»ºóÅĞ¶ÏÊÇ·ñÓĞ×óº¢×Ó£¬ÓĞÔòÈëÕ»
+		if (HasRChild(*t))s.push(t->rc);//ÈôÓĞÓÒº¢×ÓÔòÓÅÏÈÈëÕ»
+		if (HasLChild(*t))s.push(t->lc);//È»ºóÅĞ¶ÏÊÇ·ñÓĞ×óº¢×Ó£¬ÓĞÔòÈëÕ»
 	}//µÖ´ïÒ¶½ÚµãÊ±ÍË³öÑ­»·
 }
