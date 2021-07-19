@@ -3,6 +3,7 @@
 using namespace std;
 #include<assert.h>
 #include"Fib.h"
+#include"PQ_ComplHeap.hpp"
 
 typedef int Rank;//秩
 #define DEFAULT_CAPACITY 3//初始容量
@@ -24,7 +25,7 @@ protected:
 	//加倍扩容
 	void expandDouble();
 
-	//缩容
+	//缩容 
 	void shrink();
 
 	//有序向量 二分查找 A
@@ -57,6 +58,8 @@ protected:
 	//归并排序 合并操作
 	void merge(Rank lo,Rank mi, Rank hi);
 
+	//堆排序
+	void heapSort(Rank lo, Rank hi);
 
 public:
 	//构造函数
@@ -415,6 +418,17 @@ void Vector<T>::merge(Rank lo, Rank mi, Rank hi)
 			A[i++] = C[k++];
 		}
 	}*/
+}
+
+//堆排序
+template<class T>
+void Vector<T>::heapSort(Rank lo, Rank hi)
+{
+	PQ_ComplHeap<T> H(_elem + lo, hi - lo);//将待排序区间建成一个完全二叉堆,O(n)
+	while (!H.empty())//反复地摘除最大元并归入已排序的后缀，直至堆空
+	{
+		_elem[--hi] = H.delMax();//等效于堆顶与末元素交换后下滤
+	}
 }
 
 

@@ -16,14 +16,21 @@ protected:
 public:
 	PQ_ComplHeap(){}//默认构造
 	PQ_ComplHeap(T* A, Rank n){ copyFrom(A, 0, n); heapify(n); }//批量构造
-	void insert(T);//按照比较器确定的优先级次序，插入词条
+	void insert(T e);//按照比较器确定的优先级次序，插入词条
 	T getMax();//读取优先级最高的词条
 	T delMax();//删除优先级最高的词条
+	bool empty()const{ return !Vector<T>::_size; }
 };//PQ_ComplHeap
 
+//对向量前n个词条中的第i个实施下滤, i < n
 template<typename T> Rank PQ_ComplHeap<T>::percolateDown(Rank n, Rank i)
 {
-
+	Rank j;//i及其（至多两个）孩子中，堪为父者
+	while (i != (j = ProperParent(_elem, n, i))//只要i非j，则
+	{
+		swap(_elem[i], _elem[j]; i = j;)//二者换位，并继续考察下降后的i
+	}
+	return i;//返回下滤抵达的位置(亦i亦j)
 }
 
 //对向量中的第i个词条实施上滤操作，i < _size
@@ -41,6 +48,15 @@ template<typename T> Rank PQ_ComplHeap<T>::percolateUp(Rank i)
 	_elem[j] = old_i;//不再逆序时再将_elem[i]放置在它应呆的地方
 	return i;//返回上滤最终抵达的位置
 }
+
+//Floyd建堆算法，O(n)时间
+template<typename T> void PQ_ComplHeap<T>::heapify(Rank n)
+{
+	for (int i = LastInternal(n); InHeap(n, i); --i)//自底而上，依次
+		percolateDown(n, i);//下滤各内部节点
+}
+
+
 
 //将词条插入完全二叉堆中
 template<typename T> void PQ_ComplHeap<T>::insert(T e)
