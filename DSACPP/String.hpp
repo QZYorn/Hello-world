@@ -82,7 +82,6 @@ int* buildNext(char* P)
 	}
 	return N;
 }
-
 //KMP算法待改进版
 int matchKMP1(char* P, char* T)
 {
@@ -112,7 +111,7 @@ int matchKMP1(char* P, char* T)
 //		........................X***************************************
 //							    .|<------------- 'X' free ------------>|
 //*****************************************************************************************
-//构造Bad Charactor Shift表:  O(m + 256)
+//构造坏字符Bad Charactor Shift表:  O(m + 256)
 int* buildBC(char* P)
 {
 	int* bc = new int[256];//BC表，与字符表等长
@@ -120,14 +119,44 @@ int* buildBC(char* P)
 		bc[j] = -1;
 	for (size_t m = strlen(P), j = 0; j < m; ++j)//自左向右扫描模式串P
 		bc[P[j]] = j;//将字符P[j]的BC项更新为j( 单调递增 )——画家算法
-	return bc;
+	return bc;//BM算法中仅尝试做靠右的匹配字符
 }
-
+//构造最大匹配后缀长度Suffix Size表： O(m)
+int* buildSS(char* P)
+{
+	int m = strlen(P); int* ss = new int[m];//Suffix Size表
+	ss[m - 1] = m;//对最后一个字符而言，与之匹配的最长后缀就是整个P串
+	//以下，从倒数第二个字符起自右向左扫描P，依次计算出ss[]其余各项
+	for (int lo = m - 1, hi = m - 1, j = lo - 1; j >= 0; --j)
+	{
+		if ((lo < j) && (ss[m - hi + j - 1] <= j - lo))//情况一
+			ss[j] = ss[m - hi + j - 1];//直接利用此前已计算出的ss[]
+		else//情况二
+		{
+			hi = j; lo = __min(lo, hi);
+			while ((0 <= lo) && (P[lo] == P[m - hi + lo - 1]))//二重循环？:lo单调递减，j单调递减，一旦lo低于零则不会启动内循环，故只需线性时间
+				--lo;//逐个对比处于(lo,hi]前端的字符
+			ss[j] = hi - lo;
+		}
+		return ss;
+	}
+}
+//构造好后缀位移量表Good Suffix shift table: O(m)
 int* buildGS(char* P)
 {
-
+	int* ss = buildSS(P);//Suffix Size table
+	size_t m = strlen(P); int* gs = new int[m];//Good Suffix shift table
+	for (size_t j = 0; j < m; ++j)
+		gs[j] = m;//初始化
+	for (size_t i = 0, j = m - 1; j < UINT_MAX;--j)//逆向逐一扫描各字符P[j]
+		if (j + 1 == ss[j])//P[0,j] = P[m - j - 1,m]，则
+			while (i < m - j - 1)//对于P[m - j - 1]左侧的每个字符P[i]而言(二重循环？)：i单调递增，j单调递减，故总体单调收敛，不超过O(m)
+				gs[i++] = m - j - 1;//m - j - 1都是gs[i]的一种选择
+	for (size_t j = 0; j < m - 1; ++j)//画家算法：正向扫描P[]各字符，gs[j]不断递减，直至最小
+		gs[m - ss[j] - 1] = m - j - 1;//m - j - 1必是其gs[m - ss[j] - 1]值的一种选择
+	delete[] ss;
+	return gs;
 }
-
 //Boyer-Morre算法（完全版，兼顾Bad Character 与 Good Suffix）
 int matchBM(char* P, char* T)
 {
@@ -146,4 +175,65 @@ int matchBM(char* P, char* T)
 	}
 	delete[] gs; delete[] bc;//销毁GS表和BC表
 	return i;
+}
+
+
+
+
+
+//KR算法
+#define M 97//散列表长度：既然这里并不需要真地存储散列表，不妨取更大的素数，以降低误判的可能性
+#define R 10//基数：对于二进制串，取2；对于十进制串，取10；对于ASCII字符串，取128或256
+#define DIGIT(S,i) ((S)[i] - '0')//取十进制串S的第i位数字值（假定S合法）
+typedef __int64 HashCode;//用64位整数实现散列码
+bool check1by1(char* P, char* T, size_t i);
+HashCode prepareDm(size_t m);
+void updateHash(HashCode& hashT, char* T, size_t m, size_t k, HashCode Dm);
+
+//串匹配算法(Karp-Rabin)
+int match(char* P, char* T)
+{
+	size_t m = strlen(P), n = strlen(T);//assert: m <= n
+	HashCode Dm = prepareDm(m), hashP = 0, hashT = 0;
+	for (size_t i = 0; i < m; ++i)//初始化
+	{
+		hashP = (hashP * R + DIGIT(P, i) % M);//计算模式串对应的散列值
+		hashT = (hashT * R + DIGIT(T, i) % M);//计算文本串（前m位）的初始散列值
+	}
+	for (size_t k = 0;;)//查找
+	{
+		if (hashT == hashP)
+			if (check1by1(P, T, k))
+				return k;
+		if (++k > n - m)//assert : k > n - m,表示无匹配
+			return k;
+		else//否则，更新子串散列码，继续查找
+			updateHash(hashT, T, m, k, Dm);
+	}
+}
+
+//指纹相同时，逐位比对以确认是否真正匹配
+bool check1by1(char* P, char* T, size_t i)
+{
+	for (size_t m = strlen(P), j = 0; j < m; ++j, ++i)//尽管需要O(m)时间
+		if (P[j] != T[i])//但只要散列得当，调用本例程并返回false的概率将极小
+			return false;
+	return true;
+}
+
+void updateHash(HashCode& hashT, char* T, size_t m, size_t k, HashCode Dm)
+{
+	hashT = (hashT - DIGIT(T, k - 1)*Dm) % M;//在前一指纹基础上，去除首位T[k - 1]
+	hashT = (hashT* R + DIGIT(T, k + m - 1)) % M;//添加末位T[k + m - 1]
+	if (0 > hashT)//确保散列码落在合法区间内
+		hashT += M;
+}
+
+//预处理：计算R^(m - 1) % M(仅需调用一次，不必优化)
+HashCode prepareDm(size_t m)
+{
+	HashCode Dm = 1;
+	for (size_t i = 1; i < m; ++i)//直接累乘m - 1次，并取模
+		Dm = (R * Dm) % M;
+	return Dm;
 }
