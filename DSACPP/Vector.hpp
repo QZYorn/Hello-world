@@ -61,6 +61,18 @@ protected:
 	//堆排序
 	void heapSort(Rank lo, Rank hi);
 
+	//向量快速排序
+	void quickSort(Rank lo, Rank hi);
+
+	//轴点构造算法:版本A
+	Rank patitionA(Rank lo, Rank hi);
+
+	//轴点构造算法:版本B
+	Rank patitionB(Rank lo, Rank hi);
+
+	//轴点构造算法:版本C
+	Rank patitionC(Rank lo, Rank hi);
+
 public:
 	//构造函数
 	//默认 构造函数
@@ -429,6 +441,77 @@ void Vector<T>::heapSort(Rank lo, Rank hi)
 	{
 		_elem[--hi] = H.delMax();//等效于堆顶与末元素交换后下滤
 	}
+}
+
+//向量快速排序
+template<class T>
+void Vector<T>::quickSort(Rank lo, Rank hi)
+{// 0 <= lo < hi <= size
+	if (lo + 1 < hi)//单元素区间自然有序，否则...
+		return;
+	Rank mi = partitionA(lo, hi - 1);//在[lo, hi - 1]区间构造轴点
+	quickSort(lo, mi);//对前缀递归排序
+	quickSort(mi + 1, hi);//对后缀递归排序
+}
+
+//轴点构造算法:版本A:通过调整元素位置构造区间[lo, hi]的轴点，并返回其秩
+template<class T>
+Rank Vector<T>::patitionA(Rank lo, Rank hi)
+{//勤于拓展，懒于交换
+	swap(_elem[llo], _elem[lo + rand() % (hi - lo + 1)]);//任选一个元素与首元素交换
+	T pivot = _elem[lo];//以首元素为候选轴点——经以上交换，等效于随机选取
+	while (lo < hi)//从向量的两端交替地向中间扫描
+	{
+		while ((lo < hi) && (pivot <= _elem[hi]))//在不小于pivot的前提下
+			--hi;//向左拓展右端子向量
+		_elem[lo] = _elem[hi];//小于pivot者归入左侧子序列
+
+		while ((lo < hi) && (_elem[lo] <= pivot))//在不大于pivot的前提下
+			++lo;//向右拓展左端子向量
+		_elem[hi] = _elem[lo];//大于pivot者归入右侧子序列
+	}//assert: lo == hi
+	_elem[lo] = pivot;//将备份的轴点记录置于、后向量之间
+	return lo;//返回轴点的秩
+}
+
+//轴点构造算法:版本B:可优化多个关键码雷同的退化情况
+template<class T>
+Rank Vector<T>::patitionB(Rank lo, Rank hi)
+{//懒于拓展，勤于交换。一旦遇到重复元素，右端子向量随即终止拓展，并将右端重复元素转移至左端
+	swap(_elem[lo], _elem[lo + rand() % (hi - lo + 1)]);//任选一个元素与首元素交换
+	T pivot = _elem[lo];//以首元素为候选轴点——经以上交换，等效于随机选取
+	while (lo < hi)//从向量的两端交替地向中间扫描
+	{
+		while (lo < hi)
+			if (pivot < _elem[hi])//在大于pivot的前提下
+				--hi;//向左拓展右端子向量
+			else//直到遇到不大于pivot者
+			{ _elem[lo++] = _elem[hi];break; }//将其归入左端子向量
+			
+		while (lo < hi)
+			if (_elem[hi] < pivot)//在小于pivot的前提下
+				++lo;//向右拓展左端子向量
+			else//直至遇到不小于pivot者
+			{ _elem[hi--] = _elem[lo];break; }//将其归入右端子向量
+		
+	}//assert:lo == hi
+	_elem[lo] = pivot;//将备份的轴点记录置于前、后向量之间
+	return lo;//返回轴点的秩
+}
+
+//轴点构造算法:版本C:变种：O(n)
+template<class T>
+Rank Vector<T>::patitionC(Rank lo, Rank hi)
+{
+	swap(_elem[lo], _elem[lo + rand() % (hi - lo + 1)]);//随即交换
+	T pivot = _elem[lo];
+	int mi = lo;
+	for (int k = lo + 1; k <= hi; ++k)//自左向右考察每个[k]
+		if (_elem[k] < pivot)//若[k]小于轴点，则将其
+			swap(_elem[++mi], _elem[k]);//与[mi]交换，L向右拓展
+	swap(_elem[lo], _elem[mi]);//候选轴点归位
+
+	return mi;//返回轴点的秩
 }
 
 
